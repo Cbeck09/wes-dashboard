@@ -19,6 +19,7 @@
             --tentative: #d97706; --tentative-bg: #fef3c7;
             --pending: #2563eb;  --pending-bg: #dbeafe;
             --tbd: #6b7280;      --tbd-bg: #f3f4f6;
+            --juve-black: #1a1a1a;
             --gap: 16px; --radius: 10px;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -37,10 +38,8 @@
         .sync-dot.syncing { background: #d97706; animation: pulse 1s infinite; }
         .sync-dot.error { background: #dc2626; }
         @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.4} }
-
         .btn-settings { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 7px; color: rgba(255,255,255,0.8); padding: 6px 12px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background .15s; }
         .btn-settings:hover { background: rgba(255,255,255,0.18); }
-
         .filters { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
         .filter-group { display: flex; flex-direction: column; gap: 3px; }
         .filter-group label { font-size: 10px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.6px; }
@@ -61,12 +60,75 @@
         /* ── Charts ── */
         .chart-row { display: grid; grid-template-columns: 1.6fr 1fr; gap: var(--gap); margin-bottom: var(--gap); }
         .chart-container { background: var(--bg-card); border-radius: var(--radius); padding: 20px 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
-        .chart-container h3 { font-size: 12px; font-weight: 600; color: var(--text-primary); margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .chart-container h3, .section-title { font-size: 12px; font-weight: 600; color: var(--text-primary); margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
         .chart-container canvas { max-height: 260px; }
+
+        /* ── Calendar ── */
+        .calendar-section { background: var(--bg-card); border-radius: var(--radius); padding: 20px 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); margin-bottom: var(--gap); }
+        .calendar-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+        .calendar-header .section-title { margin-bottom: 0; }
+        .cal-nav { display: flex; align-items: center; gap: 12px; }
+        .cal-month-label { font-size: 15px; font-weight: 700; color: var(--text-primary); min-width: 150px; text-align: center; }
+        .btn-cal-nav { background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 6px; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; }
+        .btn-cal-nav:hover { background: #e5e7eb; }
+        .cal-legend { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+        .cal-legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-secondary); }
+        .cal-legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+        .cal-legend-dot.match { background: var(--juve-black); }
+        .cal-legend-dot.ask { background: var(--accent); }
+        .cal-legend-dot.both { background: linear-gradient(135deg, var(--juve-black) 50%, var(--accent) 50%); }
+        .cal-legend-dot.today { border: 2px solid var(--accent); background: transparent; }
+
+        .cal-grid-header { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; margin-bottom: 4px; }
+        .cal-dow { text-align: center; font-size: 11px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; padding: 4px 0; }
+        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+
+        .cal-day {
+            min-height: 88px; border-radius: 7px; padding: 7px 8px;
+            background: #fafafa; border: 1px solid #f0f0f0;
+            display: flex; flex-direction: column; gap: 3px;
+            cursor: default; transition: border-color .15s;
+            position: relative; overflow: hidden;
+        }
+        .cal-day:hover { border-color: #d1d5db; }
+        .cal-day.empty { background: transparent; border-color: transparent; }
+        .cal-day.today { border: 2px solid var(--accent); }
+        .cal-day.is-match { background: var(--juve-black); border-color: #333; }
+        .cal-day.is-match .cal-day-num { color: rgba(255,255,255,0.9); }
+        .cal-day.is-past { opacity: 0.45; }
+
+        .cal-day-num { font-size: 12px; font-weight: 700; color: var(--text-secondary); line-height: 1; }
+        .cal-day.today .cal-day-num { color: var(--accent); }
+
+        /* Match badge inside day */
+        .cal-match-badge {
+            background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 4px; padding: 3px 6px;
+            font-size: 10px; font-weight: 600; color: #fff;
+            line-height: 1.3; display: flex; flex-direction: column; gap: 1px;
+        }
+        .cal-match-badge .match-vs { font-size: 9px; opacity: 0.75; }
+        .cal-match-badge .match-time { font-size: 9px; opacity: 0.6; }
+
+        /* Ask chips inside day */
+        .cal-ask-chip {
+            border-radius: 4px; padding: 2px 6px;
+            font-size: 10px; font-weight: 600; line-height: 1.3;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            max-width: 100%;
+        }
+        .cal-ask-chip.confirmed { background: var(--confirmed-bg); color: var(--confirmed); }
+        .cal-ask-chip.tentative { background: var(--tentative-bg); color: #92400e; }
+        .cal-ask-chip.pending   { background: var(--pending-bg);   color: #1d4ed8; }
+        .cal-ask-chip.tbd       { background: #e5e7eb;             color: #4b5563; }
+        .cal-ask-chip.custom    { background: #f3e8ff;             color: #6d28d9; }
+        /* Ask chips on match day */
+        .is-match .cal-ask-chip { background: rgba(255,255,255,0.15); color: #fff; border: 1px solid rgba(255,255,255,0.25); }
+        .cal-more { font-size: 10px; color: var(--text-secondary); font-style: italic; }
+        .is-match .cal-more { color: rgba(255,255,255,0.5); }
 
         /* ── Timeline ── */
         .timeline-section { background: var(--bg-card); border-radius: var(--radius); padding: 20px 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); margin-bottom: var(--gap); }
-        .section-title { font-size: 12px; font-weight: 600; color: var(--text-primary); margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
         .timeline-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
         .month-col h4 { font-size: 12px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; padding-bottom: 8px; border-bottom: 2px solid #e5e7eb; margin-bottom: 10px; }
         .timeline-item { padding: 9px 12px; border-radius: 7px; margin-bottom: 7px; border-left: 3px solid transparent; background: #f9fafb; font-size: 12px; }
@@ -75,43 +137,43 @@
         .timeline-item .t-date { font-size: 10px; color: var(--text-secondary); margin-top: 3px; font-weight: 500; }
         .timeline-item.status-confirmed { border-left-color: var(--confirmed); }
         .timeline-item.status-tentative { border-left-color: var(--tentative); background: #fffbf0; }
-        .timeline-item.status-pending { border-left-color: var(--pending); background: #f0f6ff; }
-        .timeline-item.status-tbd { border-left-color: var(--tbd); }
+        .timeline-item.status-pending   { border-left-color: var(--pending);   background: #f0f6ff; }
+        .timeline-item.status-tbd       { border-left-color: var(--tbd); }
 
-        /* ── Notes Section ── */
+        /* ── Notes ── */
         .notes-section { background: var(--bg-card); border-radius: var(--radius); padding: 20px 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); margin-bottom: var(--gap); }
         .notes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
         .note-card { background: #fefce8; border: 1px solid #fde68a; border-radius: 8px; padding: 14px 16px; }
         .note-card .nc-brand { font-size: 11px; font-weight: 700; color: #92400e; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px; }
-        .note-card .nc-task { font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; }
-        .note-card .nc-note { font-size: 12px; color: #78350f; line-height: 1.5; }
-        .note-card .nc-date { font-size: 10px; color: #a16207; margin-top: 8px; }
+        .note-card .nc-task  { font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; }
+        .note-card .nc-note  { font-size: 12px; color: #78350f; line-height: 1.5; }
+        .note-card .nc-date  { font-size: 10px; color: #a16207; margin-top: 8px; }
         .notes-empty { font-size: 13px; color: var(--text-secondary); font-style: italic; }
 
         /* ── Table ── */
         .table-section { background: var(--bg-card); border-radius: var(--radius); padding: 20px 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); overflow-x: auto; }
         .table-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
-        .btn-add { display: flex; align-items: center; gap: 6px; background: var(--accent); color: #fff; border: none; border-radius: 7px; padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer; transition: opacity .15s; }
+        .btn-add { display: flex; align-items: center; gap: 6px; background: var(--accent); color: #fff; border: none; border-radius: 7px; padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer; }
         .btn-add:hover { opacity: .87; }
         .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
         .data-table thead th { text-align: left; padding: 9px 12px; border-bottom: 2px solid #e5e7eb; color: var(--text-secondary); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; cursor: pointer; user-select: none; }
         .data-table thead th:hover { color: var(--text-primary); background: #f9fafb; }
         .data-table thead th.no-sort { cursor: default; }
-        .data-table tbody td { padding: 10px 12px; border-bottom: 1px solid #f0f0f0; vertical-align: middle; max-width: 220px; }
+        .data-table tbody td { padding: 10px 12px; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
         .data-table tbody tr:hover { background: #fafbfc; }
         .data-table tbody tr:last-child td { border-bottom: none; }
-        .note-cell { font-size: 11px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; }
+        .note-cell { font-size: 11px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; display: block; }
         .badge { display: inline-block; padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 600; white-space: nowrap; }
         .badge-confirmed { background: var(--confirmed-bg); color: var(--confirmed); }
         .badge-tentative { background: var(--tentative-bg); color: var(--tentative); }
-        .badge-pending { background: var(--pending-bg); color: var(--pending); }
-        .badge-tbd { background: var(--tbd-bg); color: var(--tbd); }
-        .badge-custom { background: #f3f4f6; color: #374151; }
+        .badge-pending   { background: var(--pending-bg);   color: var(--pending); }
+        .badge-tbd       { background: var(--tbd-bg);       color: var(--tbd); }
+        .badge-custom    { background: #f3f4f6; color: #374151; }
         .num-cell { font-weight: 600; color: var(--text-secondary); }
         .brand-cell { font-weight: 700; }
         .row-actions { display: flex; gap: 6px; opacity: 0; transition: opacity .15s; }
         .data-table tbody tr:hover .row-actions { opacity: 1; }
-        .btn-icon { background: none; border: 1px solid #e5e7eb; border-radius: 5px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 13px; transition: background .12s; }
+        .btn-icon { background: none; border: 1px solid #e5e7eb; border-radius: 5px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 13px; }
         .btn-icon:hover { background: #f3f4f6; }
         .btn-icon.delete:hover { background: #fef2f2; border-color: #fca5a5; }
 
@@ -122,7 +184,7 @@
         .btn-confirm-cancel { background: #fff; color: #6b7280; border: 1px solid #e5e7eb; border-radius: 6px; padding: 6px 12px; font-size: 12px; cursor: pointer; }
 
         /* ── Loading ── */
-        .loading-overlay { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.7); z-index: 500; align-items: center; justify-content: center; flex-direction: column; gap: 12px; }
+        .loading-overlay { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.75); z-index: 500; align-items: center; justify-content: center; flex-direction: column; gap: 12px; }
         .loading-overlay.show { display: flex; }
         .spinner { width: 36px; height: 36px; border: 3px solid #e5e7eb; border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -156,7 +218,7 @@
         .settings-panel-body { padding: 24px; flex: 1; display: flex; flex-direction: column; gap: 28px; }
         .settings-section h3 { font-size: 13px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
         .settings-section p { font-size: 12px; color: var(--text-secondary); margin-bottom: 12px; }
-        .tag-list { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+        .tag-list { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; min-height: 32px; }
         .tag { display: flex; align-items: center; gap: 5px; background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 20px; padding: 4px 12px; font-size: 12px; font-weight: 500; }
         .tag.status-confirmed { background: var(--confirmed-bg); border-color: #86efac; color: #15803d; }
         .tag.status-tentative { background: var(--tentative-bg); border-color: #fcd34d; color: #b45309; }
@@ -168,22 +230,21 @@
         .add-tag-input { flex: 1; padding: 8px 12px; border: 1.5px solid #e5e7eb; border-radius: 7px; font-size: 13px; font-family: inherit; }
         .add-tag-input:focus { outline: none; border-color: var(--accent); }
         .btn-add-tag { background: var(--bg-header); color: #fff; border: none; border-radius: 7px; padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; }
-        .btn-add-tag:hover { opacity: .87; }
         .settings-footer { padding: 16px 24px; border-top: 1px solid #f0f0f0; flex-shrink: 0; }
         .btn-save-settings { width: 100%; background: var(--accent); color: #fff; border: none; border-radius: 8px; padding: 11px; font-size: 14px; font-weight: 700; cursor: pointer; }
-        .btn-save-settings:hover { opacity: .87; }
         .btn-save-settings:disabled { opacity: .5; cursor: not-allowed; }
 
         .dashboard-footer { margin-top: var(--gap); text-align: right; font-size: 11px; color: var(--text-secondary); }
 
         @media (max-width: 1000px) {
-            .kpi-row { grid-template-columns: repeat(2, 1fr); }
+            .kpi-row { grid-template-columns: repeat(2,1fr); }
             .chart-row { grid-template-columns: 1fr; }
-            .timeline-grid { grid-template-columns: repeat(2, 1fr); }
+            .timeline-grid { grid-template-columns: repeat(2,1fr); }
         }
-        @media (max-width: 600px) {
+        @media (max-width: 640px) {
             .timeline-grid { grid-template-columns: 1fr; }
             .modal-body { grid-template-columns: 1fr; }
+            .cal-day { min-height: 64px; }
         }
     </style>
 </head>
@@ -195,6 +256,8 @@
 </div>
 
 <div class="dashboard-container">
+
+    <!-- Header -->
     <header class="dashboard-header">
         <div class="header-left">
             <h1>WES — UPCOMING ASKS</h1>
@@ -211,32 +274,22 @@
             <div class="filters">
                 <div class="filter-group">
                     <label>Brand</label>
-                    <select id="filter-brand" onchange="applyFilters()">
-                        <option value="all">All Brands</option>
-                    </select>
+                    <select id="filter-brand" onchange="applyFilters()"><option value="all">All Brands</option></select>
                 </div>
                 <div class="filter-group">
                     <label>Status</label>
-                    <select id="filter-status" onchange="applyFilters()">
-                        <option value="all">All Statuses</option>
-                    </select>
+                    <select id="filter-status" onchange="applyFilters()"><option value="all">All Statuses</option></select>
                 </div>
                 <div class="filter-group">
                     <label>Month</label>
                     <select id="filter-month" onchange="applyFilters()">
                         <option value="all">All Months</option>
-                        <option value="january">January</option>
-                        <option value="february">February</option>
-                        <option value="march">March</option>
-                        <option value="april">April</option>
-                        <option value="may">May</option>
-                        <option value="june">June</option>
-                        <option value="july">July</option>
-                        <option value="august">August</option>
-                        <option value="september">September</option>
-                        <option value="october">October</option>
-                        <option value="november">November</option>
-                        <option value="december">December</option>
+                        <option value="january">January</option><option value="february">February</option>
+                        <option value="march">March</option><option value="april">April</option>
+                        <option value="may">May</option><option value="june">June</option>
+                        <option value="july">July</option><option value="august">August</option>
+                        <option value="september">September</option><option value="october">October</option>
+                        <option value="november">November</option><option value="december">December</option>
                         <option value="tbd">No Date / TBD</option>
                     </select>
                 </div>
@@ -244,51 +297,57 @@
         </div>
     </header>
 
+    <!-- KPIs -->
     <section class="kpi-row">
-        <div class="kpi-card total">
-            <div class="kpi-label">Total Asks</div>
-            <div class="kpi-value" id="kpi-total">—</div>
-            <div class="kpi-sub">across <span id="kpi-brands">—</span> brands</div>
-        </div>
-        <div class="kpi-card confirmed-card">
-            <div class="kpi-label">Confirmed</div>
-            <div class="kpi-value" id="kpi-confirmed" style="color:var(--confirmed)">—</div>
-            <div class="kpi-sub">exact date set</div>
-        </div>
-        <div class="kpi-card tentative-card">
-            <div class="kpi-label">Tentative / Pending</div>
-            <div class="kpi-value" id="kpi-tentative" style="color:var(--tentative)">—</div>
-            <div class="kpi-sub">needs confirmation</div>
-        </div>
-        <div class="kpi-card tbd-card">
-            <div class="kpi-label">TBD</div>
-            <div class="kpi-value" id="kpi-tbd" style="color:var(--tbd)">—</div>
-            <div class="kpi-sub">no date scheduled</div>
-        </div>
+        <div class="kpi-card total"><div class="kpi-label">Total Asks</div><div class="kpi-value" id="kpi-total">—</div><div class="kpi-sub">across <span id="kpi-brands">—</span> brands</div></div>
+        <div class="kpi-card confirmed-card"><div class="kpi-label">Confirmed</div><div class="kpi-value" id="kpi-confirmed" style="color:var(--confirmed)">—</div><div class="kpi-sub">exact date set</div></div>
+        <div class="kpi-card tentative-card"><div class="kpi-label">Tentative / Pending</div><div class="kpi-value" id="kpi-tentative" style="color:var(--tentative)">—</div><div class="kpi-sub">needs confirmation</div></div>
+        <div class="kpi-card tbd-card"><div class="kpi-label">TBD</div><div class="kpi-value" id="kpi-tbd" style="color:var(--tbd)">—</div><div class="kpi-sub">no date scheduled</div></div>
     </section>
 
+    <!-- Charts -->
     <section class="chart-row">
-        <div class="chart-container">
-            <h3>Asks by Brand</h3>
-            <canvas id="brand-chart"></canvas>
-        </div>
-        <div class="chart-container">
-            <h3>Status Breakdown</h3>
-            <canvas id="status-chart"></canvas>
-        </div>
+        <div class="chart-container"><h3>Asks by Brand</h3><canvas id="brand-chart"></canvas></div>
+        <div class="chart-container"><h3>Status Breakdown</h3><canvas id="status-chart"></canvas></div>
     </section>
 
+    <!-- Calendar -->
+    <section class="calendar-section">
+        <div class="calendar-header">
+            <div class="section-title" style="margin-bottom:0">📅 Calendar</div>
+            <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+                <div class="cal-legend">
+                    <div class="cal-legend-item"><div class="cal-legend-dot match"></div>Match day</div>
+                    <div class="cal-legend-item"><div class="cal-legend-dot ask"></div>Brand ask</div>
+                    <div class="cal-legend-item"><div class="cal-legend-dot today"></div>Today</div>
+                </div>
+                <div class="cal-nav">
+                    <button class="btn-cal-nav" onclick="calPrev()">‹</button>
+                    <div class="cal-month-label" id="cal-month-label">—</div>
+                    <button class="btn-cal-nav" onclick="calNext()">›</button>
+                </div>
+            </div>
+        </div>
+        <div class="cal-grid-header">
+            <div class="cal-dow">Sun</div><div class="cal-dow">Mon</div><div class="cal-dow">Tue</div>
+            <div class="cal-dow">Wed</div><div class="cal-dow">Thu</div><div class="cal-dow">Fri</div><div class="cal-dow">Sat</div>
+        </div>
+        <div class="cal-grid" id="cal-grid"></div>
+    </section>
+
+    <!-- Timeline -->
     <section class="timeline-section">
         <div class="section-title">Timeline View</div>
         <div class="timeline-grid" id="timeline-grid"></div>
     </section>
 
-    <!-- Notes Section -->
+    <!-- Notes -->
     <section class="notes-section">
         <div class="section-title">Notes &amp; Reminders</div>
         <div class="notes-grid" id="notes-grid"></div>
     </section>
 
+    <!-- Table -->
     <section class="table-section">
         <div class="table-header">
             <div class="section-title" style="margin-bottom:0">All Commitments</div>
@@ -312,41 +371,16 @@
 <!-- Item Modal -->
 <div class="modal-overlay" id="modal-overlay" onclick="handleOverlayClick(event)">
     <div class="modal">
-        <div class="modal-header">
-            <h2 id="modal-title">Add Item</h2>
-            <button class="modal-close" onclick="closeModal()">×</button>
-        </div>
+        <div class="modal-header"><h2 id="modal-title">Add Item</h2><button class="modal-close" onclick="closeModal()">×</button></div>
         <div class="modal-body">
             <input type="hidden" id="edit-id">
-            <div class="form-group full">
-                <label>Brand</label>
-                <input type="text" id="edit-brand" placeholder="e.g. Vita Coco" list="brand-datalist">
-                <datalist id="brand-datalist"></datalist>
-            </div>
-            <div class="form-group full">
-                <label>Task / Deliverable</label>
-                <input type="text" id="edit-task" placeholder="e.g. Podcast interview">
-            </div>
-            <div class="form-group">
-                <label>Date</label>
-                <input type="date" id="edit-date">
-            </div>
-            <div class="form-group">
-                <label>Time</label>
-                <input type="text" id="edit-time" placeholder="e.g. 3:00 PM">
-            </div>
-            <div class="form-group">
-                <label>Duration</label>
-                <input type="text" id="edit-duration" placeholder="e.g. 4 hrs">
-            </div>
-            <div class="form-group">
-                <label>Status</label>
-                <select id="edit-status"></select>
-            </div>
-            <div class="form-group full">
-                <label>Notes</label>
-                <textarea id="edit-notes" placeholder="Any additional context, reminders, or details…"></textarea>
-            </div>
+            <div class="form-group full"><label>Brand</label><input type="text" id="edit-brand" placeholder="e.g. Vita Coco" list="brand-datalist"><datalist id="brand-datalist"></datalist></div>
+            <div class="form-group full"><label>Task / Deliverable</label><input type="text" id="edit-task" placeholder="e.g. Podcast interview"></div>
+            <div class="form-group"><label>Date</label><input type="date" id="edit-date"></div>
+            <div class="form-group"><label>Time</label><input type="text" id="edit-time" placeholder="e.g. 3:00 PM"></div>
+            <div class="form-group"><label>Duration</label><input type="text" id="edit-duration" placeholder="e.g. 4 hrs"></div>
+            <div class="form-group"><label>Status</label><select id="edit-status"></select></div>
+            <div class="form-group full"><label>Notes</label><textarea id="edit-notes" placeholder="Any additional context, reminders, or details…"></textarea></div>
         </div>
         <div class="modal-footer">
             <button class="btn-cancel" onclick="closeModal()">Cancel</button>
@@ -358,174 +392,145 @@
 <!-- Settings Panel -->
 <div class="settings-overlay" id="settings-overlay" onclick="handleSettingsOverlay(event)">
     <div class="settings-panel" id="settings-panel">
-        <div class="settings-panel-header">
-            <h2>⚙️ Manage Lists</h2>
-            <button class="modal-close" onclick="closeSettings()">×</button>
-        </div>
+        <div class="settings-panel-header"><h2>⚙️ Manage Lists</h2><button class="modal-close" onclick="closeSettings()">×</button></div>
         <div class="settings-panel-body">
-            <!-- Brands -->
             <div class="settings-section">
                 <h3>Brands</h3>
                 <p>Add or remove brands from the filter and item dropdowns.</p>
                 <div class="tag-list" id="brands-tag-list"></div>
-                <div class="add-tag-row">
-                    <input class="add-tag-input" id="new-brand-input" placeholder="New brand name…" onkeydown="if(event.key==='Enter')addBrand()">
-                    <button class="btn-add-tag" onclick="addBrand()">Add</button>
-                </div>
+                <div class="add-tag-row"><input class="add-tag-input" id="new-brand-input" placeholder="New brand name…" onkeydown="if(event.key==='Enter')addBrand()"><button class="btn-add-tag" onclick="addBrand()">Add</button></div>
             </div>
-            <!-- Statuses -->
             <div class="settings-section">
                 <h3>Statuses</h3>
-                <p>Add or remove status options. Default statuses cannot be removed.</p>
+                <p>Add or remove statuses. The 4 default statuses cannot be removed.</p>
                 <div class="tag-list" id="statuses-tag-list"></div>
-                <div class="add-tag-row">
-                    <input class="add-tag-input" id="new-status-input" placeholder="New status label…" onkeydown="if(event.key==='Enter')addStatus()">
-                    <button class="btn-add-tag" onclick="addStatus()">Add</button>
-                </div>
+                <div class="add-tag-row"><input class="add-tag-input" id="new-status-input" placeholder="New status label…" onkeydown="if(event.key==='Enter')addStatus()"><button class="btn-add-tag" onclick="addStatus()">Add</button></div>
             </div>
         </div>
-        <div class="settings-footer">
-            <button class="btn-save-settings" id="btn-save-settings" onclick="saveSettings()">Save Changes</button>
-        </div>
+        <div class="settings-footer"><button class="btn-save-settings" id="btn-save-settings" onclick="saveSettings()">Save Changes</button></div>
     </div>
 </div>
 
 <script>
+// ── Supabase ──────────────────────────────────────────────────────────────────
 const SUPABASE_URL = 'https://qciwvolhjsgndsehlkyc.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_i7f7stbikne5KzNa73sT-w_Qa_rxNjO';
-const DEFAULT_STATUSES = ['confirmed','tentative','pending','tbd'];
 const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 
+const DEFAULT_STATUSES = ['confirmed','tentative','pending','tbd'];
 const MONTH_NAMES = ['january','february','march','april','may','june','july','august','september','october','november','december'];
+const MONTH_LABELS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 const BRAND_COLORS = ['#c8102e','#1e40af','#15803d','#d97706','#7c3aed','#0369a1','#b45309','#047857','#be185d','#6d28d9','#0f766e','#b91c1c','#0891b2','#7c2d12'];
+const SCOLORS = ['#16a34a','#d97706','#2563eb','#9ca3af','#7c3aed','#0891b2','#be185d'];
 
 // ── State ─────────────────────────────────────────────────────────────────────
 let allData = [], filteredData = [];
-let brandsList = [], statusesList = [];
-// working copies for settings panel
+let brandsList = [], statusesList = [], matchesList = [];
 let draftBrands = [], draftStatuses = [];
 let brandChart, statusChart, chartsReady = false;
 let sortCol = null, sortDir = 'asc';
 let pendingDeleteId = null;
+const today = new Date(); today.setHours(0,0,0,0);
+let calYear = today.getFullYear(), calMonth = today.getMonth();
 
 // ── Sync UI ───────────────────────────────────────────────────────────────────
 function setSyncStatus(state, msg) {
     document.getElementById('sync-dot').className = 'sync-dot ' + state;
     document.getElementById('sync-label').textContent = msg;
 }
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
-function getMonth(dateStr) {
-    if (!dateStr) return 'tbd';
-    const m = parseInt(dateStr.slice(5,7), 10);
-    return MONTH_NAMES[m-1] || 'other';
-}
-function getDisplayDate(row) {
-    if (!row.date) return 'TBD';
-    const d = new Date(row.date + 'T00:00:00');
-    return d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
-}
-function esc(s) { return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function statusBadge(s) {
-    const found = statusesList.find(x => x.value === s);
-    const label = found ? found.label : s;
-    const cls = DEFAULT_STATUSES.includes(s) ? `badge-${s}` : 'badge-custom';
-    return `<span class="badge ${cls}">${esc(label)}</span>`;
-}
 function stampNow() {
     document.getElementById('last-updated').textContent = new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
 }
 
-// ── Load config ───────────────────────────────────────────────────────────────
-async function loadConfig() {
-    const { data, error } = await db.from('config').select('*');
-    if (!error && data) {
-        const b = data.find(r => r.key === 'brands');
-        const s = data.find(r => r.key === 'statuses');
-        if (b) brandsList = b.value;
-        if (s) statusesList = s.value;
-    } else {
-        brandsList = [];
-        statusesList = [
-            {value:'confirmed',label:'Confirmed'},
-            {value:'tentative',label:'Tentative'},
-            {value:'pending',  label:'Pending Action'},
-            {value:'tbd',      label:'TBD'}
-        ];
-    }
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function getMonth(d) { if(!d) return 'tbd'; const m=parseInt(d.slice(5,7),10); return MONTH_NAMES[m-1]||'other'; }
+function getDisplayDate(row) {
+    if(!row.date) return 'TBD';
+    const d = new Date(row.date+'T00:00:00');
+    return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+}
+function esc(s) { return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function statusBadge(s) {
+    const found = statusesList.find(x=>x.value===s);
+    const label = found ? found.label : s;
+    const cls = DEFAULT_STATUSES.includes(s) ? `badge-${s}` : 'badge-custom';
+    return `<span class="badge ${cls}">${esc(label)}</span>`;
 }
 
-// ── Load asks ─────────────────────────────────────────────────────────────────
+// ── Load ──────────────────────────────────────────────────────────────────────
+async function loadConfig() {
+    const {data,error} = await db.from('config').select('*');
+    if(!error && data) {
+        const b=data.find(r=>r.key==='brands'), s=data.find(r=>r.key==='statuses'), m=data.find(r=>r.key==='matches');
+        if(b) brandsList=b.value;
+        if(s) statusesList=s.value;
+        if(m) matchesList=m.value;
+    }
+    if(!statusesList.length) statusesList=[{value:'confirmed',label:'Confirmed'},{value:'tentative',label:'Tentative'},{value:'pending',label:'Pending Action'},{value:'tbd',label:'TBD'}];
+}
+
 async function loadData() {
     document.getElementById('loading-overlay').classList.add('show');
     setSyncStatus('syncing','Loading…');
     try {
         await loadConfig();
-        const { data, error } = await db.from('asks').select('*').order('id',{ascending:true});
-        if (error) throw error;
+        const {data,error} = await db.from('asks').select('*').order('id',{ascending:true});
+        if(error) throw error;
         allData = data;
         rebuildFilterDropdowns();
         applyFilters();
-        if (!chartsReady) { initCharts(); chartsReady = true; } else updateCharts();
+        if(!chartsReady){initCharts();chartsReady=true;}else updateCharts();
+        renderCalendar();
         setSyncStatus('synced','Synced ✓');
         stampNow();
     } catch(e) {
-        setSyncStatus('error','Connection error');
-        console.error(e);
+        setSyncStatus('error','Connection error'); console.error(e);
     } finally {
         document.getElementById('loading-overlay').classList.remove('show');
     }
 }
 
-// Realtime
 db.channel('asks-realtime')
-    .on('postgres_changes',{event:'*',schema:'public',table:'asks'}, () => loadData())
+    .on('postgres_changes',{event:'*',schema:'public',table:'asks'},()=>loadData())
     .subscribe();
 
 // ── Filter dropdowns ──────────────────────────────────────────────────────────
 function rebuildFilterDropdowns() {
-    // Brand: merge config list + brands in data
     const inData = [...new Set(allData.map(d=>d.brand))];
-    const merged = [...new Set([...brandsList, ...inData])].sort();
-    const bSel = document.getElementById('filter-brand');
-    const bCur = bSel.value;
-    bSel.innerHTML = '<option value="all">All Brands</option>';
-    merged.forEach(b => { const o=document.createElement('option'); o.value=b; o.textContent=b; bSel.appendChild(o); });
-    bSel.value = merged.includes(bCur) ? bCur : 'all';
+    const merged = [...new Set([...brandsList,...inData])].sort();
+    const bSel=document.getElementById('filter-brand'), bCur=bSel.value;
+    bSel.innerHTML='<option value="all">All Brands</option>';
+    merged.forEach(b=>{const o=document.createElement('option');o.value=b;o.textContent=b;bSel.appendChild(o);});
+    bSel.value=merged.includes(bCur)?bCur:'all';
 
-    // Status
-    const sSel = document.getElementById('filter-status');
-    const sCur = sSel.value;
-    sSel.innerHTML = '<option value="all">All Statuses</option>';
-    statusesList.forEach(s => { const o=document.createElement('option'); o.value=s.value; o.textContent=s.label; sSel.appendChild(o); });
-    sSel.value = statusesList.find(s=>s.value===sCur) ? sCur : 'all';
+    const sSel=document.getElementById('filter-status'), sCur=sSel.value;
+    sSel.innerHTML='<option value="all">All Statuses</option>';
+    statusesList.forEach(s=>{const o=document.createElement('option');o.value=s.value;o.textContent=s.label;sSel.appendChild(o);});
+    sSel.value=statusesList.find(s=>s.value===sCur)?sCur:'all';
 
-    // Update modal status dropdown
-    const mSel = document.getElementById('edit-status');
-    const mCur = mSel.value;
-    mSel.innerHTML = '';
-    statusesList.forEach(s => { const o=document.createElement('option'); o.value=s.value; o.textContent=s.label; mSel.appendChild(o); });
-    mSel.value = mCur || 'tbd';
+    const mSel=document.getElementById('edit-status'), mCur=mSel.value;
+    mSel.innerHTML='';
+    statusesList.forEach(s=>{const o=document.createElement('option');o.value=s.value;o.textContent=s.label;mSel.appendChild(o);});
+    mSel.value=mCur||'tbd';
 
-    // Update brand datalist
-    const dl = document.getElementById('brand-datalist');
-    dl.innerHTML = '';
-    merged.forEach(b => { const o=document.createElement('option'); o.value=b; dl.appendChild(o); });
+    const dl=document.getElementById('brand-datalist'); dl.innerHTML='';
+    merged.forEach(b=>{const o=document.createElement('option');o.value=b;dl.appendChild(o);});
 }
 
 function applyFilters() {
-    const brand  = document.getElementById('filter-brand').value;
-    const status = document.getElementById('filter-status').value;
-    const month  = document.getElementById('filter-month').value;
-    filteredData = allData.filter(row => {
-        if (brand  !== 'all' && row.brand  !== brand)        return false;
-        if (status !== 'all' && row.status !== status)       return false;
-        if (month  !== 'all' && getMonth(row.date) !== month) return false;
+    const brand=document.getElementById('filter-brand').value;
+    const status=document.getElementById('filter-status').value;
+    const month=document.getElementById('filter-month').value;
+    filteredData=allData.filter(row=>{
+        if(brand !=='all'&&row.brand !==brand)  return false;
+        if(status!=='all'&&row.status!==status) return false;
+        if(month !=='all'&&getMonth(row.date)!==month) return false;
         return true;
     });
     renderKPIs(); renderTimeline(); renderNotes(); renderTable(filteredData);
-    if (chartsReady) updateCharts();
+    if(chartsReady) updateCharts();
+    renderCalendar();
 }
 
 // ── KPIs ──────────────────────────────────────────────────────────────────────
@@ -539,19 +544,18 @@ function renderKPIs() {
 
 // ── Charts ────────────────────────────────────────────────────────────────────
 function buildBrandData() {
-    const c={}; filteredData.forEach(d=>{c[d.brand]=(c[d.brand]||0)+1;});
+    const c={};filteredData.forEach(d=>{c[d.brand]=(c[d.brand]||0)+1;});
     const s=Object.entries(c).sort((a,b)=>b[1]-a[1]);
-    return {labels:s.map(e=>e[0]),data:s.map(e=>e[1])};
+    return{labels:s.map(e=>e[0]),data:s.map(e=>e[1])};
 }
 function buildStatusData() {
-    const c={}; statusesList.forEach(s=>{c[s.value]=0;}); filteredData.forEach(d=>{if(c[d.status]!==undefined)c[d.status]++; else c[d.status]=(c[d.status]||0)+1;});
-    return {labels:statusesList.map(s=>s.label), data:statusesList.map(s=>c[s.value]||0)};
+    const c={};statusesList.forEach(s=>{c[s.value]=0;});filteredData.forEach(d=>{c[d.status]=(c[d.status]||0)+1;});
+    return{labels:statusesList.map(s=>s.label),data:statusesList.map(s=>c[s.value]||0)};
 }
-const SCOLORS=['#16a34a','#d97706','#2563eb','#9ca3af','#7c3aed','#0891b2','#be185d'];
 function initCharts() {
     const bd=buildBrandData();
     brandChart=new Chart(document.getElementById('brand-chart').getContext('2d'),{
-        type:'bar', data:{labels:bd.labels,datasets:[{label:'Asks',data:bd.data,
+        type:'bar',data:{labels:bd.labels,datasets:[{label:'Asks',data:bd.data,
             backgroundColor:bd.labels.map((_,i)=>BRAND_COLORS[i%BRAND_COLORS.length]+'cc'),
             borderColor:bd.labels.map((_,i)=>BRAND_COLORS[i%BRAND_COLORS.length]),borderWidth:1,borderRadius:4}]},
         options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},
@@ -559,8 +563,7 @@ function initCharts() {
     });
     const sd=buildStatusData();
     statusChart=new Chart(document.getElementById('status-chart').getContext('2d'),{
-        type:'doughnut', data:{labels:sd.labels,datasets:[{data:sd.data,
-            backgroundColor:SCOLORS.map(c=>c+'cc'),borderColor:SCOLORS,borderWidth:2}]},
+        type:'doughnut',data:{labels:sd.labels,datasets:[{data:sd.data,backgroundColor:SCOLORS.map(c=>c+'cc'),borderColor:SCOLORS,borderWidth:2}]},
         options:{responsive:true,maintainAspectRatio:false,cutout:'62%',
             plugins:{legend:{position:'bottom',labels:{usePointStyle:true,padding:14,font:{size:12}}},
                 tooltip:{callbacks:{label:ctx=>{const t=ctx.dataset.data.reduce((a,b)=>a+b,0);return ` ${ctx.label}: ${ctx.parsed} (${t?((ctx.parsed/t)*100).toFixed(0):0}%)`;}}}}
@@ -569,30 +572,97 @@ function initCharts() {
 }
 function updateCharts() {
     const bd=buildBrandData();
-    brandChart.data.labels=bd.labels;
-    brandChart.data.datasets[0].data=bd.data;
+    brandChart.data.labels=bd.labels;brandChart.data.datasets[0].data=bd.data;
     brandChart.data.datasets[0].backgroundColor=bd.labels.map((_,i)=>BRAND_COLORS[i%BRAND_COLORS.length]+'cc');
     brandChart.data.datasets[0].borderColor=bd.labels.map((_,i)=>BRAND_COLORS[i%BRAND_COLORS.length]);
     brandChart.update('none');
     const sd=buildStatusData();
-    statusChart.data.labels=sd.labels;
-    statusChart.data.datasets[0].data=sd.data;
+    statusChart.data.labels=sd.labels;statusChart.data.datasets[0].data=sd.data;
     statusChart.update('none');
 }
 
-// ── Timeline (current + next 3 months) ───────────────────────────────────────
+// ── Calendar ──────────────────────────────────────────────────────────────────
+function calPrev() { calMonth--; if(calMonth<0){calMonth=11;calYear--;} renderCalendar(); }
+function calNext() { calMonth++; if(calMonth>11){calMonth=0;calYear++;} renderCalendar(); }
+
+function renderCalendar() {
+    document.getElementById('cal-month-label').textContent = `${MONTH_LABELS[calMonth]} ${calYear}`;
+    const grid = document.getElementById('cal-grid');
+    const firstDow = new Date(calYear, calMonth, 1).getDay();
+    const daysInMonth = new Date(calYear, calMonth+1, 0).getDate();
+
+    // Index matches by date string
+    const matchByDate = {};
+    matchesList.forEach(m => { matchByDate[m.date] = m; });
+
+    // Index asks by date string (only those with a date)
+    const asksByDate = {};
+    allData.forEach(a => {
+        if(!a.date) return;
+        if(!asksByDate[a.date]) asksByDate[a.date] = [];
+        asksByDate[a.date].push(a);
+    });
+
+    let html = '';
+    // Leading empty cells
+    for(let i=0;i<firstDow;i++) html += '<div class="cal-day empty"></div>';
+
+    for(let d=1;d<=daysInMonth;d++) {
+        const dateStr = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        const cellDate = new Date(calYear, calMonth, d);
+        const isToday = cellDate.getTime()===today.getTime();
+        const isPast = cellDate < today;
+        const match = matchByDate[dateStr];
+        const asks = asksByDate[dateStr] || [];
+
+        let classes = 'cal-day';
+        if(isToday) classes += ' today';
+        if(isPast && !isToday) classes += ' is-past';
+        if(match) classes += ' is-match';
+
+        html += `<div class="${classes}">`;
+        html += `<div class="cal-day-num">${d}</div>`;
+
+        // Match block
+        if(match) {
+            const opponent = match.venue==='home' ? `vs ${match.away}` : `@ ${match.home}`;
+            html += `<div class="cal-match-badge">
+                <span>⚽ ${esc(opponent)}</span>
+                <span class="match-time">${esc(match.time)}</span>
+            </div>`;
+        }
+
+        // Ask chips (max 2, then "+N more")
+        const MAX_CHIPS = match ? 1 : 2;
+        asks.slice(0, MAX_CHIPS).forEach(a => {
+            const chipClass = DEFAULT_STATUSES.includes(a.status) ? a.status : 'custom';
+            html += `<div class="cal-ask-chip ${chipClass}" title="${esc(a.brand+': '+a.task)}">${esc(a.brand)}</div>`;
+        });
+        if(asks.length > MAX_CHIPS) html += `<div class="cal-more">+${asks.length-MAX_CHIPS} more</div>`;
+
+        html += '</div>';
+    }
+
+    // Trailing empty cells to complete the grid
+    const total = firstDow + daysInMonth;
+    const trailing = total % 7 === 0 ? 0 : 7 - (total % 7);
+    for(let i=0;i<trailing;i++) html += '<div class="cal-day empty"></div>';
+
+    grid.innerHTML = html;
+}
+
+// ── Timeline ──────────────────────────────────────────────────────────────────
+function capitalize(s){return s.charAt(0).toUpperCase()+s.slice(1);}
 function renderTimeline() {
     const grid = document.getElementById('timeline-grid');
-    const curMonth = new Date().getMonth(); // 0-indexed
-    const cols = [];
-    for (let i=0; i<3; i++) { const m=(curMonth+i)%12; cols.push({key:MONTH_NAMES[m],label:capitalize(MONTH_NAMES[m])}); }
-    cols.push({key:'tbd', label:'TBD / No Date'});
-
-    grid.innerHTML = cols.map(m => {
-        const items = filteredData.filter(d => getMonth(d.date)===m.key);
-        const html = items.length===0
-            ? '<div style="font-size:12px;color:#d1d5db;font-style:italic;padding:6px 0">No items</div>'
-            : items.map(d=>`<div class="timeline-item status-${d.status}">
+    const curMonth = new Date().getMonth();
+    const cols=[];
+    for(let i=0;i<3;i++){const m=(curMonth+i)%12;cols.push({key:MONTH_NAMES[m],label:capitalize(MONTH_NAMES[m])});}
+    cols.push({key:'tbd',label:'TBD / No Date'});
+    grid.innerHTML=cols.map(m=>{
+        const items=filteredData.filter(d=>getMonth(d.date)===m.key);
+        const html=items.length===0?'<div style="font-size:12px;color:#d1d5db;font-style:italic;padding:6px 0">No items</div>'
+            :items.map(d=>`<div class="timeline-item status-${d.status}">
                 <div class="t-brand">${esc(d.brand)}</div>
                 <div class="t-task">${esc(d.task)}</div>
                 <div class="t-date">${esc(getDisplayDate(d))}${d.time&&d.time!=='TBD'?' · '+esc(d.time):''}</div>
@@ -600,23 +670,18 @@ function renderTimeline() {
         return `<div class="month-col"><h4>${m.label} <span style="font-weight:400;font-size:11px">(${items.length})</span></h4>${html}</div>`;
     }).join('');
 }
-function capitalize(s) { return s.charAt(0).toUpperCase()+s.slice(1); }
 
-// ── Notes section ─────────────────────────────────────────────────────────────
+// ── Notes ─────────────────────────────────────────────────────────────────────
 function renderNotes() {
-    const grid = document.getElementById('notes-grid');
-    const withNotes = filteredData.filter(d => d.notes && d.notes.trim());
-    if (withNotes.length === 0) {
-        grid.innerHTML = '<p class="notes-empty">No notes on current items. Add notes when editing an item.</p>';
-        return;
-    }
-    grid.innerHTML = withNotes.map(d => `
-        <div class="note-card">
-            <div class="nc-brand">${esc(d.brand)}</div>
-            <div class="nc-task">${esc(d.task)}</div>
-            <div class="nc-note">${esc(d.notes)}</div>
-            <div class="nc-date">${esc(getDisplayDate(d))}${d.time&&d.time!=='TBD'?' · '+esc(d.time):''} &nbsp;·&nbsp; ${statusBadge(d.status)}</div>
-        </div>`).join('');
+    const grid=document.getElementById('notes-grid');
+    const withNotes=filteredData.filter(d=>d.notes&&d.notes.trim());
+    if(!withNotes.length){grid.innerHTML='<p class="notes-empty">No notes on current items. Add notes when editing an item.</p>';return;}
+    grid.innerHTML=withNotes.map(d=>`<div class="note-card">
+        <div class="nc-brand">${esc(d.brand)}</div>
+        <div class="nc-task">${esc(d.task)}</div>
+        <div class="nc-note">${esc(d.notes)}</div>
+        <div class="nc-date">${esc(getDisplayDate(d))}${d.time&&d.time!=='TBD'?' · '+esc(d.time):''} &nbsp;·&nbsp; ${statusBadge(d.status)}</div>
+    </div>`).join('');
 }
 
 // ── Table ─────────────────────────────────────────────────────────────────────
@@ -625,12 +690,12 @@ function renderTable(data) {
     let sorted=[...data];
     if(sortCol){sorted.sort((a,b)=>{let av=sortCol==='_date'?(a.date||'zzz'):a[sortCol]??'',bv=sortCol==='_date'?(b.date||'zzz'):b[sortCol]??'';const c=av<bv?-1:av>bv?1:0;return sortDir==='asc'?c:-c;});}
     let html='<table class="data-table"><thead><tr>';
-    cols.forEach(c=>{const ns=c.f==='_actions';const arr=sortCol===c.f?(sortDir==='asc'?' ▲':' ▼'):'';html+=`<th ${ns?'class="no-sort"':''} ${ns?'':' onclick="sortBy(\''+c.f+'\')"'}>${c.l}${arr}</th>`;});
+    cols.forEach(c=>{const ns=c.f==='_actions';const arr=sortCol===c.f?(sortDir==='asc'?' ▲':' ▼'):'';html+=`<th ${ns?'class="no-sort"':''} ${ns?'':'onclick="sortBy(\''+c.f+'\')"'}>${c.l}${arr}</th>`;});
     html+='</tr></thead><tbody>';
     sorted.forEach(row=>{
         html+='<tr>';
         cols.forEach(c=>{
-            if(c.f==='id')       html+=`<td><span class="num-cell">${row.id}</span></td>`;
+            if     (c.f==='id')       html+=`<td><span class="num-cell">${row.id}</span></td>`;
             else if(c.f==='brand')    html+=`<td><span class="brand-cell">${esc(row.brand)}</span></td>`;
             else if(c.f==='task')     html+=`<td>${esc(row.task)}</td>`;
             else if(c.f==='_date')    html+=`<td>${esc(getDisplayDate(row))}</td>`;
@@ -652,15 +717,10 @@ window.openModal=function(id){
     document.getElementById('modal-title').textContent=id?'Edit Item':'Add Item';
     document.getElementById('edit-id').value=id??'';
     if(id){const row=allData.find(d=>d.id===id);if(!row)return;
-        document.getElementById('edit-brand').value=row.brand||'';
-        document.getElementById('edit-task').value=row.task||'';
-        document.getElementById('edit-date').value=row.date||'';
-        document.getElementById('edit-time').value=row.time||'';
-        document.getElementById('edit-duration').value=row.duration||'';
+        ['brand','task','date','time','duration','notes'].forEach(f=>document.getElementById('edit-'+f).value=row[f]||'');
         document.getElementById('edit-status').value=row.status||'tbd';
-        document.getElementById('edit-notes').value=row.notes||'';
     } else {
-        ['edit-brand','edit-task','edit-date','edit-time','edit-duration','edit-notes'].forEach(i=>document.getElementById(i).value='');
+        ['brand','task','date','time','duration','notes'].forEach(f=>document.getElementById('edit-'+f).value='');
         document.getElementById('edit-status').value='tbd';
     }
     document.getElementById('modal-overlay').classList.add('open');
@@ -700,60 +760,20 @@ window.confirmDelete=async function(){
 };
 
 // ── Settings Panel ────────────────────────────────────────────────────────────
-window.openSettings=function(){
-    draftBrands=[...brandsList];
-    draftStatuses=statusesList.map(s=>({...s}));
-    renderBrandTags(); renderStatusTags();
-    document.getElementById('settings-overlay').classList.add('open');
-};
+window.openSettings=function(){draftBrands=[...brandsList];draftStatuses=statusesList.map(s=>({...s}));renderBrandTags();renderStatusTags();document.getElementById('settings-overlay').classList.add('open');};
 window.closeSettings=function(){document.getElementById('settings-overlay').classList.remove('open');};
 window.handleSettingsOverlay=function(e){if(e.target===document.getElementById('settings-overlay'))closeSettings();};
-
-function renderBrandTags(){
-    document.getElementById('brands-tag-list').innerHTML=draftBrands.map((b,i)=>`
-        <div class="tag">${esc(b)}<button class="tag-remove" onclick="removeBrand(${i})" title="Remove">×</button></div>`).join('');
-}
-function renderStatusTags(){
-    document.getElementById('statuses-tag-list').innerHTML=draftStatuses.map((s,i)=>{
-        const isDefault=DEFAULT_STATUSES.includes(s.value);
-        return `<div class="tag status-${s.value}">${esc(s.label)}${!isDefault?`<button class="tag-remove" onclick="removeStatus(${i})" title="Remove">×</button>`:''}</div>`;
-    }).join('');
-}
-
-window.addBrand=function(){
-    const input=document.getElementById('new-brand-input');
-    const val=input.value.trim();
-    if(!val)return;
-    if(draftBrands.includes(val)){input.value='';return;}
-    draftBrands.push(val);draftBrands.sort();
-    renderBrandTags();input.value='';
-};
+function renderBrandTags(){document.getElementById('brands-tag-list').innerHTML=draftBrands.map((b,i)=>`<div class="tag">${esc(b)}<button class="tag-remove" onclick="removeBrand(${i})">×</button></div>`).join('');}
+function renderStatusTags(){document.getElementById('statuses-tag-list').innerHTML=draftStatuses.map((s,i)=>{const def=DEFAULT_STATUSES.includes(s.value);return`<div class="tag status-${s.value}">${esc(s.label)}${!def?`<button class="tag-remove" onclick="removeStatus(${i})">×</button>`:''}</div>`;}).join('');}
+window.addBrand=function(){const input=document.getElementById('new-brand-input');const val=input.value.trim();if(!val||draftBrands.includes(val))return;draftBrands.push(val);draftBrands.sort();renderBrandTags();input.value='';};
 window.removeBrand=function(i){draftBrands.splice(i,1);renderBrandTags();};
-
-window.addStatus=function(){
-    const input=document.getElementById('new-status-input');
-    const label=input.value.trim();
-    if(!label)return;
-    const value=label.toLowerCase().replace(/\s+/g,'-');
-    if(draftStatuses.find(s=>s.value===value)){input.value='';return;}
-    draftStatuses.push({value,label});
-    renderStatusTags();input.value='';
-};
-window.removeStatus=function(i){
-    if(DEFAULT_STATUSES.includes(draftStatuses[i].value))return;
-    draftStatuses.splice(i,1);renderStatusTags();
-};
-
+window.addStatus=function(){const input=document.getElementById('new-status-input');const label=input.value.trim();if(!label)return;const value=label.toLowerCase().replace(/\s+/g,'-');if(draftStatuses.find(s=>s.value===value))return;draftStatuses.push({value,label});renderStatusTags();input.value='';};
+window.removeStatus=function(i){if(DEFAULT_STATUSES.includes(draftStatuses[i].value))return;draftStatuses.splice(i,1);renderStatusTags();};
 window.saveSettings=async function(){
-    const btn=document.getElementById('btn-save-settings');
-    btn.disabled=true;btn.textContent='Saving…';setSyncStatus('syncing','Saving config…');
+    const btn=document.getElementById('btn-save-settings');btn.disabled=true;btn.textContent='Saving…';setSyncStatus('syncing','Saving config…');
     try{
-        await db.from('config').upsert([
-            {key:'brands',value:draftBrands},
-            {key:'statuses',value:draftStatuses}
-        ]);
-        brandsList=draftBrands;statusesList=draftStatuses;
-        rebuildFilterDropdowns();applyFilters();
+        await db.from('config').upsert([{key:'brands',value:draftBrands},{key:'statuses',value:draftStatuses}]);
+        brandsList=draftBrands;statusesList=draftStatuses;rebuildFilterDropdowns();applyFilters();
         setSyncStatus('synced','Saved ✓');stampNow();closeSettings();
     }catch(e){setSyncStatus('error','Save failed');alert('Error: '+e.message);}
     finally{btn.disabled=false;btn.textContent='Save Changes';}
