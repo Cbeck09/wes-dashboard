@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wes — Upcoming Asks</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1" integrity="sha384-jb8JQMbMoBUzgWatfe6COACi2ljcDdZQ2OxczGA3bGNeWe+6DChMTBJemed7ZnvJ" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" crossorigin="anonymous"></script>
     <style>
         :root {
             --bg-primary: #f0f2f5;
@@ -26,53 +27,31 @@
             --radius: 10px;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            line-height: 1.5;
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg-primary); color: var(--text-primary); line-height: 1.5; }
         .dashboard-container { max-width: 1300px; margin: 0 auto; padding: 20px var(--gap); }
 
         /* Header */
-        .dashboard-header {
-            background: var(--bg-header);
-            color: var(--text-on-dark);
-            padding: 22px 28px;
-            border-radius: var(--radius);
-            margin-bottom: var(--gap);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 14px;
-        }
+        .dashboard-header { background: var(--bg-header); color: var(--text-on-dark); padding: 22px 28px; border-radius: var(--radius); margin-bottom: var(--gap); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; }
         .header-left h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
         .header-left p { font-size: 13px; color: rgba(255,255,255,0.55); margin-top: 2px; }
+        .header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
         .filters { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
         .filter-group { display: flex; flex-direction: column; gap: 3px; }
         .filter-group label { font-size: 10px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.6px; }
-        .filter-group select {
-            padding: 7px 10px;
-            border: 1px solid rgba(255,255,255,0.18);
-            border-radius: 6px;
-            background: rgba(255,255,255,0.1);
-            color: var(--text-on-dark);
-            font-size: 13px;
-            cursor: pointer;
-            min-width: 130px;
-        }
+        .filter-group select { padding: 7px 10px; border: 1px solid rgba(255,255,255,0.18); border-radius: 6px; background: rgba(255,255,255,0.1); color: var(--text-on-dark); font-size: 13px; cursor: pointer; min-width: 130px; }
         .filter-group select option { background: #1a2a45; }
 
-        /* KPI Row */
+        /* Sync status */
+        .sync-status { font-size: 11px; display: flex; align-items: center; gap: 5px; }
+        .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: #6b7280; }
+        .sync-dot.synced { background: #16a34a; }
+        .sync-dot.syncing { background: #d97706; animation: pulse 1s infinite; }
+        .sync-dot.error { background: #dc2626; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+        /* KPI */
         .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--gap); margin-bottom: var(--gap); }
-        .kpi-card {
-            background: var(--bg-card);
-            border-radius: var(--radius);
-            padding: 20px 22px;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.07);
-            border-left: 4px solid transparent;
-        }
+        .kpi-card { background: var(--bg-card); border-radius: var(--radius); padding: 20px 22px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); border-left: 4px solid transparent; }
         .kpi-card.total { border-left-color: var(--accent); }
         .kpi-card.confirmed-card { border-left-color: var(--confirmed); }
         .kpi-card.tentative-card { border-left-color: var(--tentative); }
@@ -101,32 +80,19 @@
         .timeline-item.status-pending { border-left-color: var(--pending); background: #f0f6ff; }
         .timeline-item.status-tbd { border-left-color: var(--tbd); }
 
-        /* Table Section */
+        /* Table */
         .table-section { background: var(--bg-card); border-radius: var(--radius); padding: 20px 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); overflow-x: auto; }
         .table-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
         .table-header h3 { font-size: 13px; font-weight: 600; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.5px; }
-        .btn-add {
-            display: flex; align-items: center; gap: 6px;
-            background: var(--accent); color: #fff;
-            border: none; border-radius: 7px;
-            padding: 8px 16px; font-size: 13px; font-weight: 600;
-            cursor: pointer; transition: opacity .15s;
-        }
+        .btn-add { display: flex; align-items: center; gap: 6px; background: var(--accent); color: #fff; border: none; border-radius: 7px; padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer; transition: opacity .15s; }
         .btn-add:hover { opacity: .87; }
         .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        .data-table thead th {
-            text-align: left; padding: 10px 12px;
-            border-bottom: 2px solid #e5e7eb;
-            color: var(--text-secondary); font-weight: 600;
-            font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;
-            white-space: nowrap; cursor: pointer; user-select: none;
-        }
+        .data-table thead th { text-align: left; padding: 10px 12px; border-bottom: 2px solid #e5e7eb; color: var(--text-secondary); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; cursor: pointer; user-select: none; }
         .data-table thead th:hover { color: var(--text-primary); background: #f9fafb; }
         .data-table thead th.no-sort { cursor: default; }
         .data-table tbody td { padding: 10px 12px; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
         .data-table tbody tr:hover { background: #fafbfc; }
         .data-table tbody tr:last-child td { border-bottom: none; }
-
         .badge { display: inline-block; padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 600; white-space: nowrap; }
         .badge-confirmed { background: var(--confirmed-bg); color: var(--confirmed); }
         .badge-tentative { background: var(--tentative-bg); color: var(--tentative); }
@@ -134,36 +100,23 @@
         .badge-tbd { background: var(--tbd-bg); color: var(--tbd); }
         .num-cell { font-weight: 600; color: var(--text-secondary); }
         .brand-cell { font-weight: 700; }
-
-        /* Row action buttons */
         .row-actions { display: flex; gap: 6px; opacity: 0; transition: opacity .15s; }
         .data-table tbody tr:hover .row-actions { opacity: 1; }
-        .btn-icon {
-            background: none; border: 1px solid #e5e7eb; border-radius: 5px;
-            width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
-            cursor: pointer; font-size: 13px; transition: background .12s, border-color .12s;
-        }
+        .btn-icon { background: none; border: 1px solid #e5e7eb; border-radius: 5px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 13px; transition: background .12s, border-color .12s; }
         .btn-icon:hover { background: #f3f4f6; border-color: #d1d5db; }
         .btn-icon.delete:hover { background: #fef2f2; border-color: #fca5a5; }
 
+        /* Loading */
+        .loading-overlay { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.7); z-index: 500; align-items: center; justify-content: center; flex-direction: column; gap: 12px; }
+        .loading-overlay.show { display: flex; }
+        .spinner { width: 36px; height: 36px; border: 3px solid #e5e7eb; border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
         /* Modal */
-        .modal-overlay {
-            display: none; position: fixed; inset: 0;
-            background: rgba(0,0,0,0.45); z-index: 1000;
-            align-items: center; justify-content: center;
-        }
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 1000; align-items: center; justify-content: center; }
         .modal-overlay.open { display: flex; }
-        .modal {
-            background: #fff; border-radius: 14px;
-            width: 100%; max-width: 520px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-            overflow: hidden;
-        }
-        .modal-header {
-            background: var(--bg-header); color: #fff;
-            padding: 18px 24px;
-            display: flex; justify-content: space-between; align-items: center;
-        }
+        .modal { background: #fff; border-radius: 14px; width: 100%; max-width: 520px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); overflow: hidden; }
+        .modal-header { background: var(--bg-header); color: #fff; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center; }
         .modal-header h2 { font-size: 16px; font-weight: 700; }
         .modal-close { background: none; border: none; color: rgba(255,255,255,0.7); font-size: 22px; cursor: pointer; line-height: 1; padding: 2px 6px; }
         .modal-close:hover { color: #fff; }
@@ -171,36 +124,17 @@
         .form-group { display: flex; flex-direction: column; gap: 5px; }
         .form-group.full { grid-column: 1 / -1; }
         .form-group label { font-size: 11px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
-        .form-group input, .form-group select, .form-group textarea {
-            padding: 9px 11px;
-            border: 1.5px solid #e5e7eb;
-            border-radius: 7px;
-            font-size: 13px;
-            color: var(--text-primary);
-            background: #fff;
-            transition: border-color .15s;
-            font-family: inherit;
-        }
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-            outline: none; border-color: var(--accent);
-        }
-        .modal-footer {
-            padding: 16px 24px;
-            border-top: 1px solid #f0f0f0;
-            display: flex; justify-content: flex-end; gap: 10px;
-        }
+        .form-group input, .form-group select { padding: 9px 11px; border: 1.5px solid #e5e7eb; border-radius: 7px; font-size: 13px; color: var(--text-primary); background: #fff; transition: border-color .15s; font-family: inherit; }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--accent); }
+        .modal-footer { padding: 16px 24px; border-top: 1px solid #f0f0f0; display: flex; justify-content: flex-end; gap: 10px; }
         .btn-cancel { background: #f3f4f6; border: none; border-radius: 7px; padding: 9px 18px; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--text-secondary); }
         .btn-cancel:hover { background: #e5e7eb; }
         .btn-save { background: var(--accent); border: none; border-radius: 7px; padding: 9px 20px; font-size: 13px; font-weight: 600; cursor: pointer; color: #fff; }
         .btn-save:hover { opacity: .87; }
+        .btn-save:disabled { opacity: .5; cursor: not-allowed; }
 
         /* Confirm delete */
-        .confirm-bar {
-            display: none; background: #fef2f2; border: 1px solid #fca5a5;
-            border-radius: 8px; padding: 11px 16px; margin-bottom: 12px;
-            font-size: 13px; color: #991b1b;
-            align-items: center; justify-content: space-between; gap: 12px;
-        }
+        .confirm-bar { display: none; background: #fef2f2; border: 1px solid #fca5a5; border-radius: 8px; padding: 11px 16px; margin-bottom: 12px; font-size: 13px; color: #991b1b; align-items: center; justify-content: space-between; gap: 12px; }
         .confirm-bar.open { display: flex; }
         .confirm-bar-actions { display: flex; gap: 8px; }
         .btn-confirm-del { background: #dc2626; color: #fff; border: none; border-radius: 6px; padding: 6px 14px; font-size: 12px; font-weight: 600; cursor: pointer; }
@@ -218,38 +152,50 @@
     </style>
 </head>
 <body>
+
+<div class="loading-overlay" id="loading-overlay">
+    <div class="spinner"></div>
+    <div style="font-size:13px;color:#6b7280">Loading from database…</div>
+</div>
+
 <div class="dashboard-container">
     <header class="dashboard-header">
         <div class="header-left">
             <h1>WES — UPCOMING ASKS</h1>
             <p>Brand Commitments &amp; Scheduled Appearances</p>
         </div>
-        <div class="filters">
-            <div class="filter-group">
-                <label>Brand</label>
-                <select id="filter-brand" onchange="applyFilters()">
-                    <option value="all">All Brands</option>
-                </select>
+        <div class="header-right">
+            <div class="sync-status">
+                <div class="sync-dot" id="sync-dot"></div>
+                <span id="sync-label" style="color:rgba(255,255,255,0.5)">Connecting…</span>
             </div>
-            <div class="filter-group">
-                <label>Status</label>
-                <select id="filter-status" onchange="applyFilters()">
-                    <option value="all">All Statuses</option>
-                    <option value="confirmed">Confirmed</option>
-                    <option value="tentative">Tentative</option>
-                    <option value="pending">Pending Action</option>
-                    <option value="tbd">TBD</option>
-                </select>
-            </div>
-            <div class="filter-group">
-                <label>Month</label>
-                <select id="filter-month" onchange="applyFilters()">
-                    <option value="all">All Months</option>
-                    <option value="march">March 2026</option>
-                    <option value="april">April 2026</option>
-                    <option value="may">May 2026</option>
-                    <option value="tbd">No Date / TBD</option>
-                </select>
+            <div class="filters">
+                <div class="filter-group">
+                    <label>Brand</label>
+                    <select id="filter-brand" onchange="applyFilters()">
+                        <option value="all">All Brands</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Status</label>
+                    <select id="filter-status" onchange="applyFilters()">
+                        <option value="all">All Statuses</option>
+                        <option value="confirmed">Confirmed</option>
+                        <option value="tentative">Tentative</option>
+                        <option value="pending">Pending Action</option>
+                        <option value="tbd">TBD</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Month</label>
+                    <select id="filter-month" onchange="applyFilters()">
+                        <option value="all">All Months</option>
+                        <option value="march">March 2026</option>
+                        <option value="april">April 2026</option>
+                        <option value="may">May 2026</option>
+                        <option value="tbd">No Date / TBD</option>
+                    </select>
+                </div>
             </div>
         </div>
     </header>
@@ -311,11 +257,11 @@
     </section>
 
     <footer class="dashboard-footer">
-        Last updated: <span id="last-updated">—</span> &nbsp;|&nbsp; * TBD items require confirmation before scheduling
+        Last saved: <span id="last-updated">—</span> &nbsp;|&nbsp; Synced to Supabase — edits save instantly &amp; sync everywhere
     </footer>
 </div>
 
-<!-- Edit / Add Modal -->
+<!-- Modal -->
 <div class="modal-overlay" id="modal-overlay" onclick="handleOverlayClick(event)">
     <div class="modal">
         <div class="modal-header">
@@ -361,54 +307,62 @@
         </div>
         <div class="modal-footer">
             <button class="btn-cancel" onclick="closeModal()">Cancel</button>
-            <button class="btn-save" onclick="saveItem()">Save</button>
+            <button class="btn-save" id="btn-save" onclick="saveItem()">Save</button>
         </div>
     </div>
 </div>
 
 <script>
-// ─── Default Data ───────────────────────────────────────────────────────────
-const DEFAULT_DATA = [
-    { id: 1,  brand: "Vita Coco",       task: "Podcast",                       date: "2026-03-10", time: "7:00 PM",             duration: "",        notes: "",                          status: "confirmed" },
-    { id: 2,  brand: "Tempo",           task: "Shoot at the house",            date: "",           time: "TBD",                 duration: "",        notes: "",                          status: "tbd" },
-    { id: 3,  brand: "Puma",            task: "Shoot in Milan for World Cup",  date: "2026-04-13", time: "Flexible",            duration: "",        notes: "Tentative",                 status: "tentative" },
-    { id: 4,  brand: "Chobani Yogurt",  task: "In Turin — House/Field",        date: "2026-04-08", time: "3:00 PM",             duration: "",        notes: "",                          status: "confirmed" },
-    { id: 5,  brand: "Truly",           task: "Shoot in USA Camp",             date: "2026-03-25", time: "2:30 – 6:30 PM",      duration: "4 hrs",   notes: "",                          status: "confirmed" },
-    { id: 6,  brand: "Vita Coco",       task: "Ship signed balls (to DHL)",    date: "",           time: "",                    duration: "",        notes: "Before leaving for camp",   status: "pending" },
-    { id: 7,  brand: "Vita Coco",       task: "Shoot 2 videos",                date: "",           time: "< 15 mins",           duration: "< 15 min",notes: "Before leaving for camp",   status: "pending" },
-    { id: 8,  brand: "Panini",          task: "1 hour shoot in camp",          date: "",           time: "TBD",                 duration: "1 hr",    notes: "",                          status: "tbd" },
-    { id: 9,  brand: "Chobani Yogurt",  task: "Fireside Chat with Hamdi",      date: "2026-04-14", time: "4–5 PM ET / 10 PM Turin", duration: "1 hr",notes: "Tentative",               status: "tentative" },
-    { id: 10, brand: "US Soccer",       task: "4 hrs for US soccer sponsors",  date: "2026-03-23", time: "TBD",                 duration: "4 hrs",   notes: "",                          status: "confirmed" },
-    { id: 11, brand: "Annie Leibovitz", task: "1 hr at Juve after training",   date: "2026-03-29", time: "TBD",                 duration: "1 hr",    notes: "2026 World Cup Exhibition", status: "confirmed" },
-    { id: 12, brand: "Comcast",         task: "Shoot at the house",            date: "",           time: "TBD",                 duration: "",        notes: "TBD – April",               status: "tbd" },
-    { id: 13, brand: "EA Sports",       task: "Digital cover shoot",           date: "2026-04-12", time: "TBD",                 duration: "4 hrs",   notes: "Apr 12–19 window, at Juve", status: "confirmed" },
-    { id: 14, brand: "GQ",              task: "4 hour shoot",                  date: "",           time: "TBD",                 duration: "4 hrs",   notes: "April – May",               status: "tbd" },
-    { id: 15, brand: "Chase",           task: "TBD",                           date: "2026-04-20", time: "TBD",                 duration: "",        notes: "Week of Apr 20",            status: "confirmed" },
-    { id: 16, brand: "Vita Coco",       task: "Shoot in Turin – 4 hours",      date: "2026-04-17", time: "3:00 PM",             duration: "4 hrs",   notes: "",                          status: "confirmed" },
-];
+// ─── Supabase ─────────────────────────────────────────────────────────────────
+const SUPABASE_URL = 'https://qciwvolhjsgndsehlkyc.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_i7f7stbikne5KzNa73sT-w_Qa_rxNjO';
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// ─── State ───────────────────────────────────────────────────────────────────
-const LS_KEY = 'wes_dashboard_data';
-let allData = loadData();
-let filteredData = [...allData];
-let brandChart, statusChart;
+// ─── State ────────────────────────────────────────────────────────────────────
+let allData = [];
+let filteredData = [];
+let brandChart, statusChart, chartsReady = false;
 let sortCol = null, sortDir = 'asc';
 let pendingDeleteId = null;
-let nextId = Math.max(...allData.map(d => d.id)) + 1;
 
-function loadData() {
+const BRAND_COLORS = ['#c8102e','#1e40af','#15803d','#d97706','#7c3aed','#0369a1','#b45309','#047857','#be185d','#6d28d9','#0f766e','#b91c1c'];
+
+// ─── Sync UI ──────────────────────────────────────────────────────────────────
+function setSyncStatus(state, msg) {
+    const dot = document.getElementById('sync-dot');
+    const lbl = document.getElementById('sync-label');
+    dot.className = 'sync-dot ' + state;
+    lbl.textContent = msg;
+}
+
+// ─── Load from Supabase ───────────────────────────────────────────────────────
+async function loadData() {
+    document.getElementById('loading-overlay').classList.add('show');
+    setSyncStatus('syncing', 'Loading…');
     try {
-        const saved = localStorage.getItem(LS_KEY);
-        if (saved) return JSON.parse(saved);
-    } catch(e) {}
-    return DEFAULT_DATA.map(d => ({...d}));
-}
-function saveData() {
-    localStorage.setItem(LS_KEY, JSON.stringify(allData));
-    document.getElementById('last-updated').textContent = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        const { data, error } = await db.from('asks').select('*').order('id', { ascending: true });
+        if (error) throw error;
+        allData = data;
+        setSyncStatus('synced', 'Synced');
+        document.getElementById('last-updated').textContent = new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+        rebuildBrandFilter();
+        applyFilters();
+        if (!chartsReady) { initCharts(); chartsReady = true; } else updateCharts();
+    } catch(e) {
+        setSyncStatus('error', 'Connection error');
+        console.error(e);
+    } finally {
+        document.getElementById('loading-overlay').classList.remove('show');
+    }
 }
 
-// ─── Derived display fields ───────────────────────────────────────────────────
+// ─── Realtime subscription ────────────────────────────────────────────────────
+db.channel('asks-changes')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'asks' }, () => loadData())
+    .subscribe();
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 function getMonth(dateStr) {
     if (!dateStr) return 'tbd';
     const m = dateStr.slice(5, 7);
@@ -418,34 +372,34 @@ function getMonth(dateStr) {
     return 'other';
 }
 function getDisplayDate(row) {
-    if (!row.date) return row.notes ? row.notes : 'TBD';
+    if (!row.date) return row.notes || 'TBD';
     const d = new Date(row.date + 'T00:00:00');
     return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
+function esc(str) {
+    return String(str ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function statusBadge(s) {
+    const map = { confirmed:['badge-confirmed','Confirmed'], tentative:['badge-tentative','Tentative'], pending:['badge-pending','Pending Action'], tbd:['badge-tbd','TBD'] };
+    const [cls, lbl] = map[s] || ['badge-tbd', s];
+    return `<span class="badge ${cls}">${lbl}</span>`;
+}
 
-const BRAND_COLORS = ['#c8102e','#1e40af','#15803d','#d97706','#7c3aed','#0369a1','#b45309','#047857','#be185d','#6d28d9','#0f766e','#b91c1c'];
-
-// ─── Filters ─────────────────────────────────────────────────────────────────
+// ─── Filters ──────────────────────────────────────────────────────────────────
 function rebuildBrandFilter() {
     const sel = document.getElementById('filter-brand');
-    const current = sel.value;
+    const cur = sel.value;
     sel.innerHTML = '<option value="all">All Brands</option>';
     [...new Set(allData.map(d => d.brand))].sort().forEach(b => {
-        const o = document.createElement('option');
-        o.value = b; o.textContent = b;
-        sel.appendChild(o);
+        const o = document.createElement('option'); o.value = b; o.textContent = b; sel.appendChild(o);
     });
-    sel.value = current;
-
-    // also update datalist for modal
+    sel.value = cur;
     const dl = document.getElementById('brand-suggestions');
     dl.innerHTML = '';
     [...new Set(allData.map(d => d.brand))].sort().forEach(b => {
-        const o = document.createElement('option');
-        o.value = b; dl.appendChild(o);
+        const o = document.createElement('option'); o.value = b; dl.appendChild(o);
     });
 }
-
 function applyFilters() {
     const brand  = document.getElementById('filter-brand').value;
     const status = document.getElementById('filter-status').value;
@@ -456,78 +410,50 @@ function applyFilters() {
         if (month  !== 'all' && getMonth(row.date) !== month) return false;
         return true;
     });
-    renderKPIs();
-    updateCharts();
-    renderTimeline();
-    renderTable(filteredData);
+    renderKPIs(); renderTimeline(); renderTable(filteredData);
+    if (chartsReady) updateCharts();
 }
 
 // ─── KPIs ─────────────────────────────────────────────────────────────────────
 function renderKPIs() {
-    const total    = filteredData.length;
-    const brands   = new Set(filteredData.map(d => d.brand)).size;
-    const confirmed = filteredData.filter(d => d.status === 'confirmed').length;
-    const tentPend  = filteredData.filter(d => d.status === 'tentative' || d.status === 'pending').length;
-    const tbd       = filteredData.filter(d => d.status === 'tbd').length;
-    document.getElementById('kpi-total').textContent     = total;
-    document.getElementById('kpi-brands').textContent    = brands;
-    document.getElementById('kpi-confirmed').textContent = confirmed;
-    document.getElementById('kpi-tentative').textContent = tentPend;
-    document.getElementById('kpi-tbd').textContent       = tbd;
+    document.getElementById('kpi-total').textContent     = filteredData.length;
+    document.getElementById('kpi-brands').textContent    = new Set(filteredData.map(d => d.brand)).size;
+    document.getElementById('kpi-confirmed').textContent = filteredData.filter(d => d.status === 'confirmed').length;
+    document.getElementById('kpi-tentative').textContent = filteredData.filter(d => d.status === 'tentative' || d.status === 'pending').length;
+    document.getElementById('kpi-tbd').textContent       = filteredData.filter(d => d.status === 'tbd').length;
 }
 
 // ─── Charts ───────────────────────────────────────────────────────────────────
 function buildBrandData() {
-    const counts = {};
-    filteredData.forEach(d => { counts[d.brand] = (counts[d.brand] || 0) + 1; });
-    const sorted = Object.entries(counts).sort((a,b) => b[1]-a[1]);
-    return { labels: sorted.map(e=>e[0]), data: sorted.map(e=>e[1]) };
+    const c = {}; filteredData.forEach(d => { c[d.brand] = (c[d.brand]||0)+1; });
+    const s = Object.entries(c).sort((a,b)=>b[1]-a[1]);
+    return { labels: s.map(e=>e[0]), data: s.map(e=>e[1]) };
 }
 function buildStatusData() {
-    const c = { confirmed:0, tentative:0, pending:0, tbd:0 };
+    const c = {confirmed:0,tentative:0,pending:0,tbd:0};
     filteredData.forEach(d => { c[d.status]++; });
-    return { data: [c.confirmed, c.tentative, c.pending, c.tbd] };
+    return [c.confirmed, c.tentative, c.pending, c.tbd];
 }
 function initCharts() {
     const bd = buildBrandData();
     brandChart = new Chart(document.getElementById('brand-chart').getContext('2d'), {
         type: 'bar',
-        data: {
-            labels: bd.labels,
-            datasets: [{ label: 'Asks', data: bd.data,
-                backgroundColor: bd.labels.map((_,i) => BRAND_COLORS[i%BRAND_COLORS.length]+'cc'),
-                borderColor:     bd.labels.map((_,i) => BRAND_COLORS[i%BRAND_COLORS.length]),
-                borderWidth: 1, borderRadius: 4 }]
-        },
-        options: {
-            responsive: true, maintainAspectRatio: false, indexAxis: 'y',
-            plugins: { legend: { display: false } },
-            scales: {
-                x: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: '#f0f0f0' } },
-                y: { grid: { display: false }, ticks: { font: { size: 11 } } }
-            }
-        }
+        data: { labels: bd.labels, datasets: [{ label: 'Asks', data: bd.data,
+            backgroundColor: bd.labels.map((_,i)=>BRAND_COLORS[i%BRAND_COLORS.length]+'cc'),
+            borderColor: bd.labels.map((_,i)=>BRAND_COLORS[i%BRAND_COLORS.length]),
+            borderWidth:1, borderRadius:4 }] },
+        options: { responsive:true, maintainAspectRatio:false, indexAxis:'y',
+            plugins:{legend:{display:false}},
+            scales:{ x:{beginAtZero:true,ticks:{stepSize:1},grid:{color:'#f0f0f0'}}, y:{grid:{display:false},ticks:{font:{size:11}}} } }
     });
     const SCOLORS = ['#16a34a','#d97706','#2563eb','#9ca3af'];
     statusChart = new Chart(document.getElementById('status-chart').getContext('2d'), {
         type: 'doughnut',
-        data: {
-            labels: ['Confirmed','Tentative','Pending Action','TBD'],
-            datasets: [{ data: buildStatusData().data,
-                backgroundColor: SCOLORS.map(c=>c+'cc'),
-                borderColor: SCOLORS, borderWidth: 2 }]
-        },
-        options: {
-            responsive: true, maintainAspectRatio: false, cutout: '62%',
-            plugins: {
-                legend: { position: 'bottom', labels: { usePointStyle: true, padding: 14, font: { size: 12 } } },
-                tooltip: { callbacks: { label: ctx => {
-                    const total = ctx.dataset.data.reduce((a,b)=>a+b,0);
-                    const pct = total ? ((ctx.parsed/total)*100).toFixed(0) : 0;
-                    return ` ${ctx.label}: ${ctx.parsed} (${pct}%)`;
-                }}}
-            }
-        }
+        data: { labels:['Confirmed','Tentative','Pending Action','TBD'],
+            datasets:[{data:buildStatusData(), backgroundColor:SCOLORS.map(c=>c+'cc'), borderColor:SCOLORS, borderWidth:2}] },
+        options: { responsive:true, maintainAspectRatio:false, cutout:'62%',
+            plugins:{ legend:{position:'bottom',labels:{usePointStyle:true,padding:14,font:{size:12}}},
+                tooltip:{callbacks:{label:ctx=>{ const t=ctx.dataset.data.reduce((a,b)=>a+b,0); return ` ${ctx.label}: ${ctx.parsed} (${t?((ctx.parsed/t)*100).toFixed(0):0}%)`; }}} } }
     });
 }
 function updateCharts() {
@@ -537,110 +463,67 @@ function updateCharts() {
     brandChart.data.datasets[0].backgroundColor = bd.labels.map((_,i)=>BRAND_COLORS[i%BRAND_COLORS.length]+'cc');
     brandChart.data.datasets[0].borderColor = bd.labels.map((_,i)=>BRAND_COLORS[i%BRAND_COLORS.length]);
     brandChart.update('none');
-    statusChart.data.datasets[0].data = buildStatusData().data;
+    statusChart.data.datasets[0].data = buildStatusData();
     statusChart.update('none');
 }
 
 // ─── Timeline ─────────────────────────────────────────────────────────────────
 function renderTimeline() {
     const grid = document.getElementById('timeline-grid');
-    const months = [
-        { key: 'march', label: 'March 2026' },
-        { key: 'april', label: 'April 2026' },
-        { key: 'may',   label: 'May / TBD' },
-    ];
+    const months = [{key:'march',label:'March 2026'},{key:'april',label:'April 2026'},{key:'may',label:'May / TBD'}];
     grid.innerHTML = months.map(m => {
-        const items = filteredData.filter(d =>
-            getMonth(d.date) === m.key || (m.key === 'may' && (getMonth(d.date) === 'tbd' || getMonth(d.date) === 'other'))
-        );
-        const html = items.length === 0
+        const items = filteredData.filter(d => getMonth(d.date)===m.key || (m.key==='may' && (getMonth(d.date)==='tbd'||getMonth(d.date)==='other')));
+        const html = items.length===0
             ? '<div style="font-size:12px;color:#d1d5db;font-style:italic;padding:6px 0">No items</div>'
-            : items.map(d => `
-                <div class="timeline-item status-${d.status}">
-                    <div class="t-brand">${esc(d.brand)}</div>
-                    <div class="t-task">${esc(d.task)}</div>
-                    <div class="t-date">${esc(getDisplayDate(d))}${d.time && d.time !== 'TBD' ? ' · '+esc(d.time) : ''}</div>
-                </div>`).join('');
+            : items.map(d=>`<div class="timeline-item status-${d.status}">
+                <div class="t-brand">${esc(d.brand)}</div>
+                <div class="t-task">${esc(d.task)}</div>
+                <div class="t-date">${esc(getDisplayDate(d))}${d.time&&d.time!=='TBD'?' · '+esc(d.time):''}</div>
+            </div>`).join('');
         return `<div class="month-col"><h4>${m.label} <span style="font-weight:400;font-size:11px">(${items.length})</span></h4>${html}</div>`;
     }).join('');
 }
 
 // ─── Table ────────────────────────────────────────────────────────────────────
-function statusBadge(s) {
-    const map = { confirmed:['badge-confirmed','Confirmed'], tentative:['badge-tentative','Tentative'], pending:['badge-pending','Pending Action'], tbd:['badge-tbd','TBD'] };
-    const [cls, lbl] = map[s] || ['badge-tbd', s];
-    return `<span class="badge ${cls}">${lbl}</span>`;
-}
-function esc(str) {
-    return String(str ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
 function renderTable(data) {
-    const cols = [
-        { field: 'id',     label: '#' },
-        { field: 'brand',  label: 'Brand' },
-        { field: 'task',   label: 'Task / Deliverable' },
-        { field: '_date',  label: 'Date' },
-        { field: 'time',   label: 'Time' },
-        { field: 'duration', label: 'Duration' },
-        { field: 'status', label: 'Status' },
-        { field: '_actions', label: '' },
-    ];
-
+    const cols = [{f:'id',l:'#'},{f:'brand',l:'Brand'},{f:'task',l:'Task / Deliverable'},{f:'_date',l:'Date'},{f:'time',l:'Time'},{f:'duration',l:'Duration'},{f:'status',l:'Status'},{f:'_actions',l:''}];
     let sorted = [...data];
     if (sortCol) {
-        sorted.sort((a,b) => {
-            let av = a[sortCol] ?? '', bv = b[sortCol] ?? '';
-            if (sortCol === '_date') { av = a.date || 'zzz'; bv = b.date || 'zzz'; }
-            const cmp = av < bv ? -1 : av > bv ? 1 : 0;
-            return sortDir === 'asc' ? cmp : -cmp;
+        sorted.sort((a,b)=>{
+            let av = sortCol==='_date'?(a.date||'zzz'):a[sortCol]??'';
+            let bv = sortCol==='_date'?(b.date||'zzz'):b[sortCol]??'';
+            const c = av<bv?-1:av>bv?1:0; return sortDir==='asc'?c:-c;
         });
     }
-
     let html = '<table class="data-table"><thead><tr>';
     cols.forEach(c => {
-        const isSpecial = c.field === '_actions';
-        const arrow = sortCol === c.field ? (sortDir === 'asc' ? ' ▲' : ' ▼') : '';
-        const cls = isSpecial ? ' class="no-sort"' : '';
-        const click = isSpecial ? '' : `onclick="sortBy('${c.field}')"`;
-        html += `<th ${cls} ${click}>${c.label}${arrow}</th>`;
+        const ns = c.f==='_actions';
+        const arr = sortCol===c.f?(sortDir==='asc'?' ▲':' ▼'):'';
+        html += `<th ${ns?'class="no-sort"':''} ${ns?'':' onclick="sortBy(\''+c.f+'\')"'}>${c.l}${arr}</th>`;
     });
     html += '</tr></thead><tbody>';
-
     sorted.forEach(row => {
         html += '<tr>';
         cols.forEach(c => {
-            if (c.field === 'id') {
-                html += `<td><span class="num-cell">${row.id}</span></td>`;
-            } else if (c.field === 'brand') {
-                html += `<td><span class="brand-cell">${esc(row.brand)}</span></td>`;
-            } else if (c.field === 'task') {
-                html += `<td>${esc(row.task)}</td>`;
-            } else if (c.field === '_date') {
-                html += `<td>${esc(getDisplayDate(row))}</td>`;
-            } else if (c.field === 'time') {
-                html += `<td>${esc(row.time || '—')}</td>`;
-            } else if (c.field === 'duration') {
-                html += `<td>${esc(row.duration || '—')}</td>`;
-            } else if (c.field === 'status') {
-                html += `<td>${statusBadge(row.status)}</td>`;
-            } else if (c.field === '_actions') {
-                html += `<td><div class="row-actions">
-                    <button class="btn-icon" title="Edit" onclick="openModal(${row.id})">✏️</button>
-                    <button class="btn-icon delete" title="Delete" onclick="askDelete(${row.id})">🗑️</button>
-                </div></td>`;
-            }
+            if      (c.f==='id')       html += `<td><span class="num-cell">${row.id}</span></td>`;
+            else if (c.f==='brand')    html += `<td><span class="brand-cell">${esc(row.brand)}</span></td>`;
+            else if (c.f==='task')     html += `<td>${esc(row.task)}</td>`;
+            else if (c.f==='_date')    html += `<td>${esc(getDisplayDate(row))}</td>`;
+            else if (c.f==='time')     html += `<td>${esc(row.time||'—')}</td>`;
+            else if (c.f==='duration') html += `<td>${esc(row.duration||'—')}</td>`;
+            else if (c.f==='status')   html += `<td>${statusBadge(row.status)}</td>`;
+            else if (c.f==='_actions') html += `<td><div class="row-actions">
+                <button class="btn-icon" title="Edit" onclick="openModal(${row.id})">✏️</button>
+                <button class="btn-icon delete" title="Delete" onclick="askDelete(${row.id})">🗑️</button>
+            </div></td>`;
         });
         html += '</tr>';
     });
-
     html += '</tbody></table>';
     document.getElementById('table-container').innerHTML = html;
 }
-
-window.sortBy = function(field) {
-    if (sortCol === field) sortDir = sortDir === 'asc' ? 'desc' : 'asc';
-    else { sortCol = field; sortDir = 'asc'; }
+window.sortBy = function(f) {
+    if (sortCol===f) sortDir = sortDir==='asc'?'desc':'asc'; else { sortCol=f; sortDir='asc'; }
     renderTable(filteredData);
 };
 
@@ -648,7 +531,6 @@ window.sortBy = function(field) {
 window.openModal = function(id) {
     document.getElementById('modal-title').textContent = id ? 'Edit Item' : 'Add Item';
     document.getElementById('edit-id').value = id ?? '';
-
     if (id) {
         const row = allData.find(d => d.id === id);
         if (!row) return;
@@ -660,26 +542,16 @@ window.openModal = function(id) {
         document.getElementById('edit-status').value   = row.status   || 'tbd';
         document.getElementById('edit-notes').value    = row.notes    || '';
     } else {
-        document.getElementById('edit-brand').value    = '';
-        document.getElementById('edit-task').value     = '';
-        document.getElementById('edit-date').value     = '';
-        document.getElementById('edit-time').value     = '';
-        document.getElementById('edit-duration').value = '';
-        document.getElementById('edit-status').value   = 'tbd';
-        document.getElementById('edit-notes').value    = '';
+        ['edit-brand','edit-task','edit-date','edit-time','edit-duration','edit-notes'].forEach(id => document.getElementById(id).value = '');
+        document.getElementById('edit-status').value = 'tbd';
     }
     document.getElementById('modal-overlay').classList.add('open');
     setTimeout(() => document.getElementById('edit-brand').focus(), 50);
 };
+window.closeModal = function() { document.getElementById('modal-overlay').classList.remove('open'); };
+window.handleOverlayClick = function(e) { if (e.target===document.getElementById('modal-overlay')) closeModal(); };
 
-window.closeModal = function() {
-    document.getElementById('modal-overlay').classList.remove('open');
-};
-window.handleOverlayClick = function(e) {
-    if (e.target === document.getElementById('modal-overlay')) closeModal();
-};
-
-window.saveItem = function() {
+window.saveItem = async function() {
     const id       = document.getElementById('edit-id').value;
     const brand    = document.getElementById('edit-brand').value.trim();
     const task     = document.getElementById('edit-task').value.trim();
@@ -688,65 +560,66 @@ window.saveItem = function() {
     const duration = document.getElementById('edit-duration').value.trim();
     const status   = document.getElementById('edit-status').value;
     const notes    = document.getElementById('edit-notes').value.trim();
+    if (!brand || !task) { alert('Brand and Task are required.'); return; }
 
-    if (!brand || !task) {
-        alert('Brand and Task are required.');
-        return;
-    }
+    const btn = document.getElementById('btn-save');
+    btn.disabled = true; btn.textContent = 'Saving…';
+    setSyncStatus('syncing', 'Saving…');
 
-    if (id) {
-        const idx = allData.findIndex(d => d.id === parseInt(id));
-        if (idx !== -1) {
-            allData[idx] = { ...allData[idx], brand, task, date, time, duration, status, notes };
+    try {
+        if (id) {
+            const { error } = await db.from('asks').update({ brand, task, date, time, duration, status, notes }).eq('id', parseInt(id));
+            if (error) throw error;
+        } else {
+            const { error } = await db.from('asks').insert({ brand, task, date, time, duration, status, notes });
+            if (error) throw error;
         }
-    } else {
-        allData.push({ id: nextId++, brand, task, date, time, duration, status, notes });
+        setSyncStatus('synced', 'Saved ✓');
+        document.getElementById('last-updated').textContent = new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+        closeModal();
+        await loadData();
+    } catch(e) {
+        setSyncStatus('error', 'Save failed');
+        alert('Error saving: ' + e.message);
+    } finally {
+        btn.disabled = false; btn.textContent = 'Save';
     }
-
-    saveData();
-    rebuildBrandFilter();
-    applyFilters();
-    closeModal();
 };
 
 // ─── Delete ───────────────────────────────────────────────────────────────────
 window.askDelete = function(id) {
     pendingDeleteId = id;
-    const row = allData.find(d => d.id === id);
+    const row = allData.find(d => d.id===id);
     document.getElementById('confirm-msg').textContent = `Delete "${row?.brand} — ${row?.task}"?`;
     document.getElementById('confirm-bar').classList.add('open');
-    document.getElementById('confirm-bar').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 };
 window.cancelDelete = function() {
     pendingDeleteId = null;
     document.getElementById('confirm-bar').classList.remove('open');
 };
-window.confirmDelete = function() {
-    if (pendingDeleteId != null) {
-        allData = allData.filter(d => d.id !== pendingDeleteId);
+window.confirmDelete = async function() {
+    if (pendingDeleteId == null) return;
+    setSyncStatus('syncing', 'Deleting…');
+    try {
+        const { error } = await db.from('asks').delete().eq('id', pendingDeleteId);
+        if (error) throw error;
         pendingDeleteId = null;
         document.getElementById('confirm-bar').classList.remove('open');
-        saveData();
-        rebuildBrandFilter();
-        applyFilters();
+        setSyncStatus('synced', 'Deleted ✓');
+        await loadData();
+    } catch(e) {
+        setSyncStatus('error', 'Delete failed');
+        alert('Error: ' + e.message);
     }
 };
 
-// Keyboard shortcuts
 document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') closeModal();
-    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
-        if (document.getElementById('modal-overlay').classList.contains('open')) saveItem();
-    }
+    if (e.key==='Escape') closeModal();
+    if ((e.metaKey||e.ctrlKey) && e.key==='Enter' && document.getElementById('modal-overlay').classList.contains('open')) saveItem();
 });
 
 // ─── Init ─────────────────────────────────────────────────────────────────────
-rebuildBrandFilter();
-renderKPIs();
-initCharts();
-renderTimeline();
-renderTable(allData);
-document.getElementById('last-updated').textContent = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+loadData();
 </script>
 </body>
 </html>
