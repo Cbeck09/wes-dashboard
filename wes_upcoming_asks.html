@@ -236,6 +236,25 @@
 
         .dashboard-footer { margin-top: var(--gap); text-align: right; font-size: 11px; color: var(--text-secondary); }
 
+        /* ── Login Screen ── */
+        .login-screen { display: none; position: fixed; inset: 0; background: var(--bg-header); z-index: 9999; align-items: center; justify-content: center; }
+        .login-screen.show { display: flex; }
+        .login-card { background: #162035; border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 40px 44px; width: 100%; max-width: 400px; box-shadow: 0 24px 64px rgba(0,0,0,0.5); }
+        .login-logo { font-size: 22px; font-weight: 800; color: #fff; letter-spacing: -0.5px; margin-bottom: 4px; }
+        .login-sub { font-size: 12px; color: rgba(255,255,255,0.4); margin-bottom: 32px; }
+        .login-label { display: block; font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 6px; }
+        .login-input { width: 100%; padding: 11px 14px; background: rgba(255,255,255,0.07); border: 1.5px solid rgba(255,255,255,0.12); border-radius: 8px; color: #fff; font-size: 14px; font-family: inherit; margin-bottom: 16px; transition: border-color .15s; }
+        .login-input:focus { outline: none; border-color: var(--accent); }
+        .login-input::placeholder { color: rgba(255,255,255,0.25); }
+        .btn-login { width: 100%; background: var(--accent); color: #fff; border: none; border-radius: 8px; padding: 12px; font-size: 14px; font-weight: 700; cursor: pointer; margin-top: 4px; transition: opacity .15s; }
+        .btn-login:hover { opacity: .87; }
+        .btn-login:disabled { opacity: .4; cursor: not-allowed; }
+        .login-error { color: #fca5a5; font-size: 12px; margin-top: 12px; min-height: 18px; }
+
+        /* ── Logout btn ── */
+        .btn-logout { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 7px; color: rgba(255,255,255,0.7); padding: 6px 12px; font-size: 12px; font-weight: 600; cursor: pointer; transition: background .15s; }
+        .btn-logout:hover { background: rgba(255,255,255,0.15); color: #fff; }
+
         @media (max-width: 1000px) {
             .kpi-row { grid-template-columns: repeat(2,1fr); }
             .chart-row { grid-template-columns: 1fr; }
@@ -249,6 +268,20 @@
     </style>
 </head>
 <body>
+
+<!-- Login Screen -->
+<div class="login-screen" id="login-screen">
+    <div class="login-card">
+        <div class="login-logo">WES — UPCOMING ASKS</div>
+        <div class="login-sub">Brand Commitments &amp; Scheduled Appearances</div>
+        <label class="login-label" for="login-email">Email</label>
+        <input class="login-input" id="login-email" type="email" placeholder="you@example.com" autocomplete="email">
+        <label class="login-label" for="login-password">Password</label>
+        <input class="login-input" id="login-password" type="password" placeholder="••••••••" autocomplete="current-password">
+        <button class="btn-login" id="btn-login" onclick="signIn()">Sign In</button>
+        <div class="login-error" id="login-error"></div>
+    </div>
+</div>
 
 <div class="loading-overlay" id="loading-overlay">
     <div class="spinner"></div>
@@ -269,6 +302,7 @@
                     <div class="sync-dot" id="sync-dot"></div>
                     <span id="sync-label">Connecting…</span>
                 </div>
+                <button class="btn-logout" onclick="signOut()">Sign Out</button>
                 <button class="btn-settings" onclick="openSettings()">⚙️ Manage Lists</button>
             </div>
             <div class="filters">
@@ -784,7 +818,46 @@ document.addEventListener('keydown',e=>{
     if((e.metaKey||e.ctrlKey)&&e.key==='Enter'&&document.getElementById('modal-overlay').classList.contains('open'))saveItem();
 });
 
-loadData();
+// ── Auth ──────────────────────────────────────────────────────────────────────
+function showLogin() {
+    document.getElementById('login-screen').classList.add('show');
+    document.getElementById('login-error').textContent = '';
+    setTimeout(() => document.getElementById('login-email').focus(), 50);
+}
+function showDashboard() {
+    document.getElementById('login-screen').classList.remove('show');
+    loadData();
+}
+
+window.signIn = async function() {
+    const email = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-password').value;
+    const btn = document.getElementById('btn-login');
+    const errEl = document.getElementById('login-error');
+    errEl.textContent = '';
+    if (!email || !password) { errEl.textContent = 'Please enter your email and password.'; return; }
+    btn.disabled = true; btn.textContent = 'Signing in…';
+    const { error } = await db.auth.signInWithPassword({ email, password });
+    btn.disabled = false; btn.textContent = 'Sign In';
+    if (error) { errEl.textContent = error.message; }
+};
+
+window.signOut = async function() {
+    await db.auth.signOut();
+};
+
+document.getElementById('login-password').addEventListener('keydown', e => {
+    if (e.key === 'Enter') signIn();
+});
+
+db.auth.onAuthStateChange((event, session) => {
+    if (session) showDashboard(); else showLogin();
+});
+
+(async () => {
+    const { data: { session } } = await db.auth.getSession();
+    if (session) showDashboard(); else showLogin();
+})();
 </script>
 </body>
 </html>
