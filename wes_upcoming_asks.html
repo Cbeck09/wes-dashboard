@@ -15,41 +15,39 @@
             --text-secondary: #6b7280;
             --text-on-dark: #ffffff;
             --accent: #c8102e;
-            --confirmed: #16a34a;
-            --confirmed-bg: #dcfce7;
-            --tentative: #d97706;
-            --tentative-bg: #fef3c7;
-            --pending: #2563eb;
-            --pending-bg: #dbeafe;
-            --tbd: #6b7280;
-            --tbd-bg: #f3f4f6;
-            --gap: 16px;
-            --radius: 10px;
+            --confirmed: #16a34a; --confirmed-bg: #dcfce7;
+            --tentative: #d97706; --tentative-bg: #fef3c7;
+            --pending: #2563eb;  --pending-bg: #dbeafe;
+            --tbd: #6b7280;      --tbd-bg: #f3f4f6;
+            --gap: 16px; --radius: 10px;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg-primary); color: var(--text-primary); line-height: 1.5; }
-        .dashboard-container { max-width: 1300px; margin: 0 auto; padding: 20px var(--gap); }
+        .dashboard-container { max-width: 1340px; margin: 0 auto; padding: 20px var(--gap); }
 
-        /* Header */
-        .dashboard-header { background: var(--bg-header); color: var(--text-on-dark); padding: 22px 28px; border-radius: var(--radius); margin-bottom: var(--gap); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; }
-        .header-left h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
-        .header-left p { font-size: 13px; color: rgba(255,255,255,0.55); margin-top: 2px; }
-        .header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+        /* ── Header ── */
+        .dashboard-header { background: var(--bg-header); color: var(--text-on-dark); padding: 20px 28px; border-radius: var(--radius); margin-bottom: var(--gap); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+        .header-left h1 { font-size: 21px; font-weight: 700; letter-spacing: -0.3px; }
+        .header-left p { font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 2px; }
+        .header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+        .header-top-row { display: flex; align-items: center; gap: 12px; }
+        .sync-status { font-size: 11px; display: flex; align-items: center; gap: 5px; color: rgba(255,255,255,0.5); }
+        .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: #6b7280; flex-shrink: 0; }
+        .sync-dot.synced { background: #16a34a; }
+        .sync-dot.syncing { background: #d97706; animation: pulse 1s infinite; }
+        .sync-dot.error { background: #dc2626; }
+        @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.4} }
+
+        .btn-settings { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 7px; color: rgba(255,255,255,0.8); padding: 6px 12px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background .15s; }
+        .btn-settings:hover { background: rgba(255,255,255,0.18); }
+
         .filters { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
         .filter-group { display: flex; flex-direction: column; gap: 3px; }
         .filter-group label { font-size: 10px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.6px; }
         .filter-group select { padding: 7px 10px; border: 1px solid rgba(255,255,255,0.18); border-radius: 6px; background: rgba(255,255,255,0.1); color: var(--text-on-dark); font-size: 13px; cursor: pointer; min-width: 130px; }
         .filter-group select option { background: #1a2a45; }
 
-        /* Sync status */
-        .sync-status { font-size: 11px; display: flex; align-items: center; gap: 5px; }
-        .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: #6b7280; }
-        .sync-dot.synced { background: #16a34a; }
-        .sync-dot.syncing { background: #d97706; animation: pulse 1s infinite; }
-        .sync-dot.error { background: #dc2626; }
-        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
-
-        /* KPI */
+        /* ── KPI ── */
         .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--gap); margin-bottom: var(--gap); }
         .kpi-card { background: var(--bg-card); border-radius: var(--radius); padding: 20px 22px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); border-left: 4px solid transparent; }
         .kpi-card.total { border-left-color: var(--accent); }
@@ -60,17 +58,17 @@
         .kpi-value { font-size: 36px; font-weight: 800; color: var(--text-primary); line-height: 1; }
         .kpi-sub { font-size: 12px; color: var(--text-secondary); margin-top: 5px; }
 
-        /* Charts */
+        /* ── Charts ── */
         .chart-row { display: grid; grid-template-columns: 1.6fr 1fr; gap: var(--gap); margin-bottom: var(--gap); }
         .chart-container { background: var(--bg-card); border-radius: var(--radius); padding: 20px 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
-        .chart-container h3 { font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .chart-container h3 { font-size: 12px; font-weight: 600; color: var(--text-primary); margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
         .chart-container canvas { max-height: 260px; }
 
-        /* Timeline */
+        /* ── Timeline ── */
         .timeline-section { background: var(--bg-card); border-radius: var(--radius); padding: 20px 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); margin-bottom: var(--gap); }
-        .timeline-section h3 { font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .timeline-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-        .month-col h4 { font-size: 13px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; padding-bottom: 8px; border-bottom: 2px solid #e5e7eb; margin-bottom: 10px; }
+        .section-title { font-size: 12px; font-weight: 600; color: var(--text-primary); margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .timeline-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+        .month-col h4 { font-size: 12px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; padding-bottom: 8px; border-bottom: 2px solid #e5e7eb; margin-bottom: 10px; }
         .timeline-item { padding: 9px 12px; border-radius: 7px; margin-bottom: 7px; border-left: 3px solid transparent; background: #f9fafb; font-size: 12px; }
         .timeline-item .t-brand { font-weight: 700; color: var(--text-primary); font-size: 12px; }
         .timeline-item .t-task { color: var(--text-secondary); font-size: 11px; margin-top: 1px; }
@@ -80,39 +78,56 @@
         .timeline-item.status-pending { border-left-color: var(--pending); background: #f0f6ff; }
         .timeline-item.status-tbd { border-left-color: var(--tbd); }
 
-        /* Table */
+        /* ── Notes Section ── */
+        .notes-section { background: var(--bg-card); border-radius: var(--radius); padding: 20px 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); margin-bottom: var(--gap); }
+        .notes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+        .note-card { background: #fefce8; border: 1px solid #fde68a; border-radius: 8px; padding: 14px 16px; }
+        .note-card .nc-brand { font-size: 11px; font-weight: 700; color: #92400e; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px; }
+        .note-card .nc-task { font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; }
+        .note-card .nc-note { font-size: 12px; color: #78350f; line-height: 1.5; }
+        .note-card .nc-date { font-size: 10px; color: #a16207; margin-top: 8px; }
+        .notes-empty { font-size: 13px; color: var(--text-secondary); font-style: italic; }
+
+        /* ── Table ── */
         .table-section { background: var(--bg-card); border-radius: var(--radius); padding: 20px 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); overflow-x: auto; }
-        .table-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-        .table-header h3 { font-size: 13px; font-weight: 600; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.5px; }
+        .table-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
         .btn-add { display: flex; align-items: center; gap: 6px; background: var(--accent); color: #fff; border: none; border-radius: 7px; padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer; transition: opacity .15s; }
         .btn-add:hover { opacity: .87; }
         .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        .data-table thead th { text-align: left; padding: 10px 12px; border-bottom: 2px solid #e5e7eb; color: var(--text-secondary); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; cursor: pointer; user-select: none; }
+        .data-table thead th { text-align: left; padding: 9px 12px; border-bottom: 2px solid #e5e7eb; color: var(--text-secondary); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; cursor: pointer; user-select: none; }
         .data-table thead th:hover { color: var(--text-primary); background: #f9fafb; }
         .data-table thead th.no-sort { cursor: default; }
-        .data-table tbody td { padding: 10px 12px; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
+        .data-table tbody td { padding: 10px 12px; border-bottom: 1px solid #f0f0f0; vertical-align: middle; max-width: 220px; }
         .data-table tbody tr:hover { background: #fafbfc; }
         .data-table tbody tr:last-child td { border-bottom: none; }
+        .note-cell { font-size: 11px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; }
         .badge { display: inline-block; padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 600; white-space: nowrap; }
         .badge-confirmed { background: var(--confirmed-bg); color: var(--confirmed); }
         .badge-tentative { background: var(--tentative-bg); color: var(--tentative); }
         .badge-pending { background: var(--pending-bg); color: var(--pending); }
         .badge-tbd { background: var(--tbd-bg); color: var(--tbd); }
+        .badge-custom { background: #f3f4f6; color: #374151; }
         .num-cell { font-weight: 600; color: var(--text-secondary); }
         .brand-cell { font-weight: 700; }
         .row-actions { display: flex; gap: 6px; opacity: 0; transition: opacity .15s; }
         .data-table tbody tr:hover .row-actions { opacity: 1; }
-        .btn-icon { background: none; border: 1px solid #e5e7eb; border-radius: 5px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 13px; transition: background .12s, border-color .12s; }
-        .btn-icon:hover { background: #f3f4f6; border-color: #d1d5db; }
+        .btn-icon { background: none; border: 1px solid #e5e7eb; border-radius: 5px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 13px; transition: background .12s; }
+        .btn-icon:hover { background: #f3f4f6; }
         .btn-icon.delete:hover { background: #fef2f2; border-color: #fca5a5; }
 
-        /* Loading */
+        /* ── Confirm bar ── */
+        .confirm-bar { display: none; background: #fef2f2; border: 1px solid #fca5a5; border-radius: 8px; padding: 11px 16px; margin-bottom: 12px; font-size: 13px; color: #991b1b; align-items: center; justify-content: space-between; gap: 12px; }
+        .confirm-bar.open { display: flex; }
+        .btn-confirm-del { background: #dc2626; color: #fff; border: none; border-radius: 6px; padding: 6px 14px; font-size: 12px; font-weight: 600; cursor: pointer; }
+        .btn-confirm-cancel { background: #fff; color: #6b7280; border: 1px solid #e5e7eb; border-radius: 6px; padding: 6px 12px; font-size: 12px; cursor: pointer; }
+
+        /* ── Loading ── */
         .loading-overlay { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.7); z-index: 500; align-items: center; justify-content: center; flex-direction: column; gap: 12px; }
         .loading-overlay.show { display: flex; }
         .spinner { width: 36px; height: 36px; border: 3px solid #e5e7eb; border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* Modal */
+        /* ── Item Modal ── */
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 1000; align-items: center; justify-content: center; }
         .modal-overlay.open { display: flex; }
         .modal { background: #fff; border-radius: 14px; width: 100%; max-width: 520px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); overflow: hidden; }
@@ -120,32 +135,53 @@
         .modal-header h2 { font-size: 16px; font-weight: 700; }
         .modal-close { background: none; border: none; color: rgba(255,255,255,0.7); font-size: 22px; cursor: pointer; line-height: 1; padding: 2px 6px; }
         .modal-close:hover { color: #fff; }
-        .modal-body { padding: 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .modal-body { padding: 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
         .form-group { display: flex; flex-direction: column; gap: 5px; }
         .form-group.full { grid-column: 1 / -1; }
         .form-group label { font-size: 11px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
-        .form-group input, .form-group select { padding: 9px 11px; border: 1.5px solid #e5e7eb; border-radius: 7px; font-size: 13px; color: var(--text-primary); background: #fff; transition: border-color .15s; font-family: inherit; }
-        .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--accent); }
-        .modal-footer { padding: 16px 24px; border-top: 1px solid #f0f0f0; display: flex; justify-content: flex-end; gap: 10px; }
+        .form-group input, .form-group select, .form-group textarea { padding: 9px 11px; border: 1.5px solid #e5e7eb; border-radius: 7px; font-size: 13px; color: var(--text-primary); background: #fff; transition: border-color .15s; font-family: inherit; }
+        .form-group textarea { resize: vertical; min-height: 72px; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--accent); }
+        .modal-footer { padding: 14px 24px; border-top: 1px solid #f0f0f0; display: flex; justify-content: flex-end; gap: 10px; }
         .btn-cancel { background: #f3f4f6; border: none; border-radius: 7px; padding: 9px 18px; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--text-secondary); }
-        .btn-cancel:hover { background: #e5e7eb; }
         .btn-save { background: var(--accent); border: none; border-radius: 7px; padding: 9px 20px; font-size: 13px; font-weight: 600; cursor: pointer; color: #fff; }
-        .btn-save:hover { opacity: .87; }
         .btn-save:disabled { opacity: .5; cursor: not-allowed; }
 
-        /* Confirm delete */
-        .confirm-bar { display: none; background: #fef2f2; border: 1px solid #fca5a5; border-radius: 8px; padding: 11px 16px; margin-bottom: 12px; font-size: 13px; color: #991b1b; align-items: center; justify-content: space-between; gap: 12px; }
-        .confirm-bar.open { display: flex; }
-        .confirm-bar-actions { display: flex; gap: 8px; }
-        .btn-confirm-del { background: #dc2626; color: #fff; border: none; border-radius: 6px; padding: 6px 14px; font-size: 12px; font-weight: 600; cursor: pointer; }
-        .btn-confirm-del:hover { background: #b91c1c; }
-        .btn-confirm-cancel { background: #fff; color: #6b7280; border: 1px solid #e5e7eb; border-radius: 6px; padding: 6px 12px; font-size: 12px; cursor: pointer; }
+        /* ── Settings Panel ── */
+        .settings-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 2000; justify-content: flex-end; }
+        .settings-overlay.open { display: flex; }
+        .settings-panel { background: #fff; width: 420px; max-width: 100vw; height: 100vh; overflow-y: auto; display: flex; flex-direction: column; box-shadow: -8px 0 40px rgba(0,0,0,0.15); }
+        .settings-panel-header { background: var(--bg-header); color: #fff; padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+        .settings-panel-header h2 { font-size: 16px; font-weight: 700; }
+        .settings-panel-body { padding: 24px; flex: 1; display: flex; flex-direction: column; gap: 28px; }
+        .settings-section h3 { font-size: 13px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+        .settings-section p { font-size: 12px; color: var(--text-secondary); margin-bottom: 12px; }
+        .tag-list { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+        .tag { display: flex; align-items: center; gap: 5px; background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 20px; padding: 4px 12px; font-size: 12px; font-weight: 500; }
+        .tag.status-confirmed { background: var(--confirmed-bg); border-color: #86efac; color: #15803d; }
+        .tag.status-tentative { background: var(--tentative-bg); border-color: #fcd34d; color: #b45309; }
+        .tag.status-pending   { background: var(--pending-bg);  border-color: #93c5fd; color: #1d4ed8; }
+        .tag.status-tbd       { background: var(--tbd-bg);      border-color: #d1d5db; color: #4b5563; }
+        .tag-remove { background: none; border: none; cursor: pointer; color: #9ca3af; font-size: 14px; line-height: 1; padding: 0 2px; }
+        .tag-remove:hover { color: #dc2626; }
+        .add-tag-row { display: flex; gap: 8px; }
+        .add-tag-input { flex: 1; padding: 8px 12px; border: 1.5px solid #e5e7eb; border-radius: 7px; font-size: 13px; font-family: inherit; }
+        .add-tag-input:focus { outline: none; border-color: var(--accent); }
+        .btn-add-tag { background: var(--bg-header); color: #fff; border: none; border-radius: 7px; padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+        .btn-add-tag:hover { opacity: .87; }
+        .settings-footer { padding: 16px 24px; border-top: 1px solid #f0f0f0; flex-shrink: 0; }
+        .btn-save-settings { width: 100%; background: var(--accent); color: #fff; border: none; border-radius: 8px; padding: 11px; font-size: 14px; font-weight: 700; cursor: pointer; }
+        .btn-save-settings:hover { opacity: .87; }
+        .btn-save-settings:disabled { opacity: .5; cursor: not-allowed; }
 
         .dashboard-footer { margin-top: var(--gap); text-align: right; font-size: 11px; color: var(--text-secondary); }
 
-        @media (max-width: 900px) {
+        @media (max-width: 1000px) {
             .kpi-row { grid-template-columns: repeat(2, 1fr); }
             .chart-row { grid-template-columns: 1fr; }
+            .timeline-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 600px) {
             .timeline-grid { grid-template-columns: 1fr; }
             .modal-body { grid-template-columns: 1fr; }
         }
@@ -155,7 +191,7 @@
 
 <div class="loading-overlay" id="loading-overlay">
     <div class="spinner"></div>
-    <div style="font-size:13px;color:#6b7280">Loading from database…</div>
+    <div style="font-size:13px;color:#6b7280">Loading…</div>
 </div>
 
 <div class="dashboard-container">
@@ -165,9 +201,12 @@
             <p>Brand Commitments &amp; Scheduled Appearances</p>
         </div>
         <div class="header-right">
-            <div class="sync-status">
-                <div class="sync-dot" id="sync-dot"></div>
-                <span id="sync-label" style="color:rgba(255,255,255,0.5)">Connecting…</span>
+            <div class="header-top-row">
+                <div class="sync-status">
+                    <div class="sync-dot" id="sync-dot"></div>
+                    <span id="sync-label">Connecting…</span>
+                </div>
+                <button class="btn-settings" onclick="openSettings()">⚙️ Manage Lists</button>
             </div>
             <div class="filters">
                 <div class="filter-group">
@@ -180,19 +219,24 @@
                     <label>Status</label>
                     <select id="filter-status" onchange="applyFilters()">
                         <option value="all">All Statuses</option>
-                        <option value="confirmed">Confirmed</option>
-                        <option value="tentative">Tentative</option>
-                        <option value="pending">Pending Action</option>
-                        <option value="tbd">TBD</option>
                     </select>
                 </div>
                 <div class="filter-group">
                     <label>Month</label>
                     <select id="filter-month" onchange="applyFilters()">
                         <option value="all">All Months</option>
-                        <option value="march">March 2026</option>
-                        <option value="april">April 2026</option>
-                        <option value="may">May 2026</option>
+                        <option value="january">January</option>
+                        <option value="february">February</option>
+                        <option value="march">March</option>
+                        <option value="april">April</option>
+                        <option value="may">May</option>
+                        <option value="june">June</option>
+                        <option value="july">July</option>
+                        <option value="august">August</option>
+                        <option value="september">September</option>
+                        <option value="october">October</option>
+                        <option value="november">November</option>
+                        <option value="december">December</option>
                         <option value="tbd">No Date / TBD</option>
                     </select>
                 </div>
@@ -235,20 +279,24 @@
     </section>
 
     <section class="timeline-section">
-        <h3>Timeline View</h3>
+        <div class="section-title">Timeline View</div>
         <div class="timeline-grid" id="timeline-grid"></div>
+    </section>
+
+    <!-- Notes Section -->
+    <section class="notes-section">
+        <div class="section-title">Notes &amp; Reminders</div>
+        <div class="notes-grid" id="notes-grid"></div>
     </section>
 
     <section class="table-section">
         <div class="table-header">
-            <h3>All Commitments</h3>
-            <button class="btn-add" onclick="openModal()">
-                <span style="font-size:16px;line-height:1">+</span> Add Item
-            </button>
+            <div class="section-title" style="margin-bottom:0">All Commitments</div>
+            <button class="btn-add" onclick="openModal()">+ Add Item</button>
         </div>
         <div id="confirm-bar" class="confirm-bar">
             <span id="confirm-msg">Delete this item?</span>
-            <div class="confirm-bar-actions">
+            <div style="display:flex;gap:8px">
                 <button class="btn-confirm-cancel" onclick="cancelDelete()">Cancel</button>
                 <button class="btn-confirm-del" onclick="confirmDelete()">Delete</button>
             </div>
@@ -257,11 +305,11 @@
     </section>
 
     <footer class="dashboard-footer">
-        Last saved: <span id="last-updated">—</span> &nbsp;|&nbsp; Synced to Supabase — edits save instantly &amp; sync everywhere
+        Last saved: <span id="last-updated">—</span> &nbsp;|&nbsp; Synced to Supabase
     </footer>
 </div>
 
-<!-- Modal -->
+<!-- Item Modal -->
 <div class="modal-overlay" id="modal-overlay" onclick="handleOverlayClick(event)">
     <div class="modal">
         <div class="modal-header">
@@ -272,8 +320,8 @@
             <input type="hidden" id="edit-id">
             <div class="form-group full">
                 <label>Brand</label>
-                <input type="text" id="edit-brand" placeholder="e.g. Vita Coco" list="brand-suggestions">
-                <datalist id="brand-suggestions"></datalist>
+                <input type="text" id="edit-brand" placeholder="e.g. Vita Coco" list="brand-datalist">
+                <datalist id="brand-datalist"></datalist>
             </div>
             <div class="form-group full">
                 <label>Task / Deliverable</label>
@@ -285,7 +333,7 @@
             </div>
             <div class="form-group">
                 <label>Time</label>
-                <input type="text" id="edit-time" placeholder="e.g. 3:00 PM or TBD">
+                <input type="text" id="edit-time" placeholder="e.g. 3:00 PM">
             </div>
             <div class="form-group">
                 <label>Duration</label>
@@ -293,16 +341,11 @@
             </div>
             <div class="form-group">
                 <label>Status</label>
-                <select id="edit-status">
-                    <option value="confirmed">Confirmed</option>
-                    <option value="tentative">Tentative</option>
-                    <option value="pending">Pending Action</option>
-                    <option value="tbd">TBD</option>
-                </select>
+                <select id="edit-status"></select>
             </div>
             <div class="form-group full">
-                <label>Notes (optional)</label>
-                <input type="text" id="edit-notes" placeholder="e.g. Need to take to DHL before leaving">
+                <label>Notes</label>
+                <textarea id="edit-notes" placeholder="Any additional context, reminders, or details…"></textarea>
             </div>
         </div>
         <div class="modal-footer">
@@ -312,167 +355,241 @@
     </div>
 </div>
 
+<!-- Settings Panel -->
+<div class="settings-overlay" id="settings-overlay" onclick="handleSettingsOverlay(event)">
+    <div class="settings-panel" id="settings-panel">
+        <div class="settings-panel-header">
+            <h2>⚙️ Manage Lists</h2>
+            <button class="modal-close" onclick="closeSettings()">×</button>
+        </div>
+        <div class="settings-panel-body">
+            <!-- Brands -->
+            <div class="settings-section">
+                <h3>Brands</h3>
+                <p>Add or remove brands from the filter and item dropdowns.</p>
+                <div class="tag-list" id="brands-tag-list"></div>
+                <div class="add-tag-row">
+                    <input class="add-tag-input" id="new-brand-input" placeholder="New brand name…" onkeydown="if(event.key==='Enter')addBrand()">
+                    <button class="btn-add-tag" onclick="addBrand()">Add</button>
+                </div>
+            </div>
+            <!-- Statuses -->
+            <div class="settings-section">
+                <h3>Statuses</h3>
+                <p>Add or remove status options. Default statuses cannot be removed.</p>
+                <div class="tag-list" id="statuses-tag-list"></div>
+                <div class="add-tag-row">
+                    <input class="add-tag-input" id="new-status-input" placeholder="New status label…" onkeydown="if(event.key==='Enter')addStatus()">
+                    <button class="btn-add-tag" onclick="addStatus()">Add</button>
+                </div>
+            </div>
+        </div>
+        <div class="settings-footer">
+            <button class="btn-save-settings" id="btn-save-settings" onclick="saveSettings()">Save Changes</button>
+        </div>
+    </div>
+</div>
+
 <script>
-// ─── Supabase ─────────────────────────────────────────────────────────────────
 const SUPABASE_URL = 'https://qciwvolhjsgndsehlkyc.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_i7f7stbikne5KzNa73sT-w_Qa_rxNjO';
+const DEFAULT_STATUSES = ['confirmed','tentative','pending','tbd'];
 const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// ─── State ────────────────────────────────────────────────────────────────────
-let allData = [];
-let filteredData = [];
+const MONTH_NAMES = ['january','february','march','april','may','june','july','august','september','october','november','december'];
+const BRAND_COLORS = ['#c8102e','#1e40af','#15803d','#d97706','#7c3aed','#0369a1','#b45309','#047857','#be185d','#6d28d9','#0f766e','#b91c1c','#0891b2','#7c2d12'];
+
+// ── State ─────────────────────────────────────────────────────────────────────
+let allData = [], filteredData = [];
+let brandsList = [], statusesList = [];
+// working copies for settings panel
+let draftBrands = [], draftStatuses = [];
 let brandChart, statusChart, chartsReady = false;
 let sortCol = null, sortDir = 'asc';
 let pendingDeleteId = null;
 
-const BRAND_COLORS = ['#c8102e','#1e40af','#15803d','#d97706','#7c3aed','#0369a1','#b45309','#047857','#be185d','#6d28d9','#0f766e','#b91c1c'];
-
-// ─── Sync UI ──────────────────────────────────────────────────────────────────
+// ── Sync UI ───────────────────────────────────────────────────────────────────
 function setSyncStatus(state, msg) {
-    const dot = document.getElementById('sync-dot');
-    const lbl = document.getElementById('sync-label');
-    dot.className = 'sync-dot ' + state;
-    lbl.textContent = msg;
+    document.getElementById('sync-dot').className = 'sync-dot ' + state;
+    document.getElementById('sync-label').textContent = msg;
 }
 
-// ─── Load from Supabase ───────────────────────────────────────────────────────
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function getMonth(dateStr) {
+    if (!dateStr) return 'tbd';
+    const m = parseInt(dateStr.slice(5,7), 10);
+    return MONTH_NAMES[m-1] || 'other';
+}
+function getDisplayDate(row) {
+    if (!row.date) return 'TBD';
+    const d = new Date(row.date + 'T00:00:00');
+    return d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+}
+function esc(s) { return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function statusBadge(s) {
+    const found = statusesList.find(x => x.value === s);
+    const label = found ? found.label : s;
+    const cls = DEFAULT_STATUSES.includes(s) ? `badge-${s}` : 'badge-custom';
+    return `<span class="badge ${cls}">${esc(label)}</span>`;
+}
+function stampNow() {
+    document.getElementById('last-updated').textContent = new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+}
+
+// ── Load config ───────────────────────────────────────────────────────────────
+async function loadConfig() {
+    const { data, error } = await db.from('config').select('*');
+    if (!error && data) {
+        const b = data.find(r => r.key === 'brands');
+        const s = data.find(r => r.key === 'statuses');
+        if (b) brandsList = b.value;
+        if (s) statusesList = s.value;
+    } else {
+        brandsList = [];
+        statusesList = [
+            {value:'confirmed',label:'Confirmed'},
+            {value:'tentative',label:'Tentative'},
+            {value:'pending',  label:'Pending Action'},
+            {value:'tbd',      label:'TBD'}
+        ];
+    }
+}
+
+// ── Load asks ─────────────────────────────────────────────────────────────────
 async function loadData() {
     document.getElementById('loading-overlay').classList.add('show');
-    setSyncStatus('syncing', 'Loading…');
+    setSyncStatus('syncing','Loading…');
     try {
-        const { data, error } = await db.from('asks').select('*').order('id', { ascending: true });
+        await loadConfig();
+        const { data, error } = await db.from('asks').select('*').order('id',{ascending:true});
         if (error) throw error;
         allData = data;
-        setSyncStatus('synced', 'Synced');
-        document.getElementById('last-updated').textContent = new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-        rebuildBrandFilter();
+        rebuildFilterDropdowns();
         applyFilters();
         if (!chartsReady) { initCharts(); chartsReady = true; } else updateCharts();
+        setSyncStatus('synced','Synced ✓');
+        stampNow();
     } catch(e) {
-        setSyncStatus('error', 'Connection error');
+        setSyncStatus('error','Connection error');
         console.error(e);
     } finally {
         document.getElementById('loading-overlay').classList.remove('show');
     }
 }
 
-// ─── Realtime subscription ────────────────────────────────────────────────────
-db.channel('asks-changes')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'asks' }, () => loadData())
+// Realtime
+db.channel('asks-realtime')
+    .on('postgres_changes',{event:'*',schema:'public',table:'asks'}, () => loadData())
     .subscribe();
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-function getMonth(dateStr) {
-    if (!dateStr) return 'tbd';
-    const m = dateStr.slice(5, 7);
-    if (m === '03') return 'march';
-    if (m === '04') return 'april';
-    if (m === '05') return 'may';
-    return 'other';
-}
-function getDisplayDate(row) {
-    if (!row.date) return row.notes || 'TBD';
-    const d = new Date(row.date + 'T00:00:00');
-    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-}
-function esc(str) {
-    return String(str ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-function statusBadge(s) {
-    const map = { confirmed:['badge-confirmed','Confirmed'], tentative:['badge-tentative','Tentative'], pending:['badge-pending','Pending Action'], tbd:['badge-tbd','TBD'] };
-    const [cls, lbl] = map[s] || ['badge-tbd', s];
-    return `<span class="badge ${cls}">${lbl}</span>`;
+// ── Filter dropdowns ──────────────────────────────────────────────────────────
+function rebuildFilterDropdowns() {
+    // Brand: merge config list + brands in data
+    const inData = [...new Set(allData.map(d=>d.brand))];
+    const merged = [...new Set([...brandsList, ...inData])].sort();
+    const bSel = document.getElementById('filter-brand');
+    const bCur = bSel.value;
+    bSel.innerHTML = '<option value="all">All Brands</option>';
+    merged.forEach(b => { const o=document.createElement('option'); o.value=b; o.textContent=b; bSel.appendChild(o); });
+    bSel.value = merged.includes(bCur) ? bCur : 'all';
+
+    // Status
+    const sSel = document.getElementById('filter-status');
+    const sCur = sSel.value;
+    sSel.innerHTML = '<option value="all">All Statuses</option>';
+    statusesList.forEach(s => { const o=document.createElement('option'); o.value=s.value; o.textContent=s.label; sSel.appendChild(o); });
+    sSel.value = statusesList.find(s=>s.value===sCur) ? sCur : 'all';
+
+    // Update modal status dropdown
+    const mSel = document.getElementById('edit-status');
+    const mCur = mSel.value;
+    mSel.innerHTML = '';
+    statusesList.forEach(s => { const o=document.createElement('option'); o.value=s.value; o.textContent=s.label; mSel.appendChild(o); });
+    mSel.value = mCur || 'tbd';
+
+    // Update brand datalist
+    const dl = document.getElementById('brand-datalist');
+    dl.innerHTML = '';
+    merged.forEach(b => { const o=document.createElement('option'); o.value=b; dl.appendChild(o); });
 }
 
-// ─── Filters ──────────────────────────────────────────────────────────────────
-function rebuildBrandFilter() {
-    const sel = document.getElementById('filter-brand');
-    const cur = sel.value;
-    sel.innerHTML = '<option value="all">All Brands</option>';
-    [...new Set(allData.map(d => d.brand))].sort().forEach(b => {
-        const o = document.createElement('option'); o.value = b; o.textContent = b; sel.appendChild(o);
-    });
-    sel.value = cur;
-    const dl = document.getElementById('brand-suggestions');
-    dl.innerHTML = '';
-    [...new Set(allData.map(d => d.brand))].sort().forEach(b => {
-        const o = document.createElement('option'); o.value = b; dl.appendChild(o);
-    });
-}
 function applyFilters() {
     const brand  = document.getElementById('filter-brand').value;
     const status = document.getElementById('filter-status').value;
     const month  = document.getElementById('filter-month').value;
     filteredData = allData.filter(row => {
-        if (brand  !== 'all' && row.brand  !== brand)  return false;
-        if (status !== 'all' && row.status !== status) return false;
+        if (brand  !== 'all' && row.brand  !== brand)        return false;
+        if (status !== 'all' && row.status !== status)       return false;
         if (month  !== 'all' && getMonth(row.date) !== month) return false;
         return true;
     });
-    renderKPIs(); renderTimeline(); renderTable(filteredData);
+    renderKPIs(); renderTimeline(); renderNotes(); renderTable(filteredData);
     if (chartsReady) updateCharts();
 }
 
-// ─── KPIs ─────────────────────────────────────────────────────────────────────
+// ── KPIs ──────────────────────────────────────────────────────────────────────
 function renderKPIs() {
     document.getElementById('kpi-total').textContent     = filteredData.length;
-    document.getElementById('kpi-brands').textContent    = new Set(filteredData.map(d => d.brand)).size;
-    document.getElementById('kpi-confirmed').textContent = filteredData.filter(d => d.status === 'confirmed').length;
-    document.getElementById('kpi-tentative').textContent = filteredData.filter(d => d.status === 'tentative' || d.status === 'pending').length;
-    document.getElementById('kpi-tbd').textContent       = filteredData.filter(d => d.status === 'tbd').length;
+    document.getElementById('kpi-brands').textContent    = new Set(filteredData.map(d=>d.brand)).size;
+    document.getElementById('kpi-confirmed').textContent = filteredData.filter(d=>d.status==='confirmed').length;
+    document.getElementById('kpi-tentative').textContent = filteredData.filter(d=>d.status==='tentative'||d.status==='pending').length;
+    document.getElementById('kpi-tbd').textContent       = filteredData.filter(d=>d.status==='tbd').length;
 }
 
-// ─── Charts ───────────────────────────────────────────────────────────────────
+// ── Charts ────────────────────────────────────────────────────────────────────
 function buildBrandData() {
-    const c = {}; filteredData.forEach(d => { c[d.brand] = (c[d.brand]||0)+1; });
-    const s = Object.entries(c).sort((a,b)=>b[1]-a[1]);
-    return { labels: s.map(e=>e[0]), data: s.map(e=>e[1]) };
+    const c={}; filteredData.forEach(d=>{c[d.brand]=(c[d.brand]||0)+1;});
+    const s=Object.entries(c).sort((a,b)=>b[1]-a[1]);
+    return {labels:s.map(e=>e[0]),data:s.map(e=>e[1])};
 }
 function buildStatusData() {
-    const c = {confirmed:0,tentative:0,pending:0,tbd:0};
-    filteredData.forEach(d => { c[d.status]++; });
-    return [c.confirmed, c.tentative, c.pending, c.tbd];
+    const c={}; statusesList.forEach(s=>{c[s.value]=0;}); filteredData.forEach(d=>{if(c[d.status]!==undefined)c[d.status]++; else c[d.status]=(c[d.status]||0)+1;});
+    return {labels:statusesList.map(s=>s.label), data:statusesList.map(s=>c[s.value]||0)};
 }
+const SCOLORS=['#16a34a','#d97706','#2563eb','#9ca3af','#7c3aed','#0891b2','#be185d'];
 function initCharts() {
-    const bd = buildBrandData();
-    brandChart = new Chart(document.getElementById('brand-chart').getContext('2d'), {
-        type: 'bar',
-        data: { labels: bd.labels, datasets: [{ label: 'Asks', data: bd.data,
-            backgroundColor: bd.labels.map((_,i)=>BRAND_COLORS[i%BRAND_COLORS.length]+'cc'),
-            borderColor: bd.labels.map((_,i)=>BRAND_COLORS[i%BRAND_COLORS.length]),
-            borderWidth:1, borderRadius:4 }] },
-        options: { responsive:true, maintainAspectRatio:false, indexAxis:'y',
-            plugins:{legend:{display:false}},
-            scales:{ x:{beginAtZero:true,ticks:{stepSize:1},grid:{color:'#f0f0f0'}}, y:{grid:{display:false},ticks:{font:{size:11}}} } }
+    const bd=buildBrandData();
+    brandChart=new Chart(document.getElementById('brand-chart').getContext('2d'),{
+        type:'bar', data:{labels:bd.labels,datasets:[{label:'Asks',data:bd.data,
+            backgroundColor:bd.labels.map((_,i)=>BRAND_COLORS[i%BRAND_COLORS.length]+'cc'),
+            borderColor:bd.labels.map((_,i)=>BRAND_COLORS[i%BRAND_COLORS.length]),borderWidth:1,borderRadius:4}]},
+        options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},
+            scales:{x:{beginAtZero:true,ticks:{stepSize:1},grid:{color:'#f0f0f0'}},y:{grid:{display:false},ticks:{font:{size:11}}}}}
     });
-    const SCOLORS = ['#16a34a','#d97706','#2563eb','#9ca3af'];
-    statusChart = new Chart(document.getElementById('status-chart').getContext('2d'), {
-        type: 'doughnut',
-        data: { labels:['Confirmed','Tentative','Pending Action','TBD'],
-            datasets:[{data:buildStatusData(), backgroundColor:SCOLORS.map(c=>c+'cc'), borderColor:SCOLORS, borderWidth:2}] },
-        options: { responsive:true, maintainAspectRatio:false, cutout:'62%',
-            plugins:{ legend:{position:'bottom',labels:{usePointStyle:true,padding:14,font:{size:12}}},
-                tooltip:{callbacks:{label:ctx=>{ const t=ctx.dataset.data.reduce((a,b)=>a+b,0); return ` ${ctx.label}: ${ctx.parsed} (${t?((ctx.parsed/t)*100).toFixed(0):0}%)`; }}} } }
+    const sd=buildStatusData();
+    statusChart=new Chart(document.getElementById('status-chart').getContext('2d'),{
+        type:'doughnut', data:{labels:sd.labels,datasets:[{data:sd.data,
+            backgroundColor:SCOLORS.map(c=>c+'cc'),borderColor:SCOLORS,borderWidth:2}]},
+        options:{responsive:true,maintainAspectRatio:false,cutout:'62%',
+            plugins:{legend:{position:'bottom',labels:{usePointStyle:true,padding:14,font:{size:12}}},
+                tooltip:{callbacks:{label:ctx=>{const t=ctx.dataset.data.reduce((a,b)=>a+b,0);return ` ${ctx.label}: ${ctx.parsed} (${t?((ctx.parsed/t)*100).toFixed(0):0}%)`;}}}}
+        }
     });
 }
 function updateCharts() {
-    const bd = buildBrandData();
-    brandChart.data.labels = bd.labels;
-    brandChart.data.datasets[0].data = bd.data;
-    brandChart.data.datasets[0].backgroundColor = bd.labels.map((_,i)=>BRAND_COLORS[i%BRAND_COLORS.length]+'cc');
-    brandChart.data.datasets[0].borderColor = bd.labels.map((_,i)=>BRAND_COLORS[i%BRAND_COLORS.length]);
+    const bd=buildBrandData();
+    brandChart.data.labels=bd.labels;
+    brandChart.data.datasets[0].data=bd.data;
+    brandChart.data.datasets[0].backgroundColor=bd.labels.map((_,i)=>BRAND_COLORS[i%BRAND_COLORS.length]+'cc');
+    brandChart.data.datasets[0].borderColor=bd.labels.map((_,i)=>BRAND_COLORS[i%BRAND_COLORS.length]);
     brandChart.update('none');
-    statusChart.data.datasets[0].data = buildStatusData();
+    const sd=buildStatusData();
+    statusChart.data.labels=sd.labels;
+    statusChart.data.datasets[0].data=sd.data;
     statusChart.update('none');
 }
 
-// ─── Timeline ─────────────────────────────────────────────────────────────────
+// ── Timeline (current + next 3 months) ───────────────────────────────────────
 function renderTimeline() {
     const grid = document.getElementById('timeline-grid');
-    const months = [{key:'march',label:'March 2026'},{key:'april',label:'April 2026'},{key:'may',label:'May / TBD'}];
-    grid.innerHTML = months.map(m => {
-        const items = filteredData.filter(d => getMonth(d.date)===m.key || (m.key==='may' && (getMonth(d.date)==='tbd'||getMonth(d.date)==='other')));
+    const curMonth = new Date().getMonth(); // 0-indexed
+    const cols = [];
+    for (let i=0; i<3; i++) { const m=(curMonth+i)%12; cols.push({key:MONTH_NAMES[m],label:capitalize(MONTH_NAMES[m])}); }
+    cols.push({key:'tbd', label:'TBD / No Date'});
+
+    grid.innerHTML = cols.map(m => {
+        const items = filteredData.filter(d => getMonth(d.date)===m.key);
         const html = items.length===0
             ? '<div style="font-size:12px;color:#d1d5db;font-style:italic;padding:6px 0">No items</div>'
             : items.map(d=>`<div class="timeline-item status-${d.status}">
@@ -483,142 +600,170 @@ function renderTimeline() {
         return `<div class="month-col"><h4>${m.label} <span style="font-weight:400;font-size:11px">(${items.length})</span></h4>${html}</div>`;
     }).join('');
 }
+function capitalize(s) { return s.charAt(0).toUpperCase()+s.slice(1); }
 
-// ─── Table ────────────────────────────────────────────────────────────────────
-function renderTable(data) {
-    const cols = [{f:'id',l:'#'},{f:'brand',l:'Brand'},{f:'task',l:'Task / Deliverable'},{f:'_date',l:'Date'},{f:'time',l:'Time'},{f:'duration',l:'Duration'},{f:'status',l:'Status'},{f:'_actions',l:''}];
-    let sorted = [...data];
-    if (sortCol) {
-        sorted.sort((a,b)=>{
-            let av = sortCol==='_date'?(a.date||'zzz'):a[sortCol]??'';
-            let bv = sortCol==='_date'?(b.date||'zzz'):b[sortCol]??'';
-            const c = av<bv?-1:av>bv?1:0; return sortDir==='asc'?c:-c;
-        });
+// ── Notes section ─────────────────────────────────────────────────────────────
+function renderNotes() {
+    const grid = document.getElementById('notes-grid');
+    const withNotes = filteredData.filter(d => d.notes && d.notes.trim());
+    if (withNotes.length === 0) {
+        grid.innerHTML = '<p class="notes-empty">No notes on current items. Add notes when editing an item.</p>';
+        return;
     }
-    let html = '<table class="data-table"><thead><tr>';
-    cols.forEach(c => {
-        const ns = c.f==='_actions';
-        const arr = sortCol===c.f?(sortDir==='asc'?' ▲':' ▼'):'';
-        html += `<th ${ns?'class="no-sort"':''} ${ns?'':' onclick="sortBy(\''+c.f+'\')"'}>${c.l}${arr}</th>`;
-    });
-    html += '</tr></thead><tbody>';
-    sorted.forEach(row => {
-        html += '<tr>';
-        cols.forEach(c => {
-            if      (c.f==='id')       html += `<td><span class="num-cell">${row.id}</span></td>`;
-            else if (c.f==='brand')    html += `<td><span class="brand-cell">${esc(row.brand)}</span></td>`;
-            else if (c.f==='task')     html += `<td>${esc(row.task)}</td>`;
-            else if (c.f==='_date')    html += `<td>${esc(getDisplayDate(row))}</td>`;
-            else if (c.f==='time')     html += `<td>${esc(row.time||'—')}</td>`;
-            else if (c.f==='duration') html += `<td>${esc(row.duration||'—')}</td>`;
-            else if (c.f==='status')   html += `<td>${statusBadge(row.status)}</td>`;
-            else if (c.f==='_actions') html += `<td><div class="row-actions">
-                <button class="btn-icon" title="Edit" onclick="openModal(${row.id})">✏️</button>
-                <button class="btn-icon delete" title="Delete" onclick="askDelete(${row.id})">🗑️</button>
-            </div></td>`;
-        });
-        html += '</tr>';
-    });
-    html += '</tbody></table>';
-    document.getElementById('table-container').innerHTML = html;
+    grid.innerHTML = withNotes.map(d => `
+        <div class="note-card">
+            <div class="nc-brand">${esc(d.brand)}</div>
+            <div class="nc-task">${esc(d.task)}</div>
+            <div class="nc-note">${esc(d.notes)}</div>
+            <div class="nc-date">${esc(getDisplayDate(d))}${d.time&&d.time!=='TBD'?' · '+esc(d.time):''} &nbsp;·&nbsp; ${statusBadge(d.status)}</div>
+        </div>`).join('');
 }
-window.sortBy = function(f) {
-    if (sortCol===f) sortDir = sortDir==='asc'?'desc':'asc'; else { sortCol=f; sortDir='asc'; }
-    renderTable(filteredData);
-};
 
-// ─── Modal ────────────────────────────────────────────────────────────────────
-window.openModal = function(id) {
-    document.getElementById('modal-title').textContent = id ? 'Edit Item' : 'Add Item';
-    document.getElementById('edit-id').value = id ?? '';
-    if (id) {
-        const row = allData.find(d => d.id === id);
-        if (!row) return;
-        document.getElementById('edit-brand').value    = row.brand    || '';
-        document.getElementById('edit-task').value     = row.task     || '';
-        document.getElementById('edit-date').value     = row.date     || '';
-        document.getElementById('edit-time').value     = row.time     || '';
-        document.getElementById('edit-duration').value = row.duration || '';
-        document.getElementById('edit-status').value   = row.status   || 'tbd';
-        document.getElementById('edit-notes').value    = row.notes    || '';
+// ── Table ─────────────────────────────────────────────────────────────────────
+function renderTable(data) {
+    const cols=[{f:'id',l:'#'},{f:'brand',l:'Brand'},{f:'task',l:'Task / Deliverable'},{f:'_date',l:'Date'},{f:'time',l:'Time'},{f:'duration',l:'Duration'},{f:'status',l:'Status'},{f:'notes',l:'Notes'},{f:'_actions',l:''}];
+    let sorted=[...data];
+    if(sortCol){sorted.sort((a,b)=>{let av=sortCol==='_date'?(a.date||'zzz'):a[sortCol]??'',bv=sortCol==='_date'?(b.date||'zzz'):b[sortCol]??'';const c=av<bv?-1:av>bv?1:0;return sortDir==='asc'?c:-c;});}
+    let html='<table class="data-table"><thead><tr>';
+    cols.forEach(c=>{const ns=c.f==='_actions';const arr=sortCol===c.f?(sortDir==='asc'?' ▲':' ▼'):'';html+=`<th ${ns?'class="no-sort"':''} ${ns?'':' onclick="sortBy(\''+c.f+'\')"'}>${c.l}${arr}</th>`;});
+    html+='</tr></thead><tbody>';
+    sorted.forEach(row=>{
+        html+='<tr>';
+        cols.forEach(c=>{
+            if(c.f==='id')       html+=`<td><span class="num-cell">${row.id}</span></td>`;
+            else if(c.f==='brand')    html+=`<td><span class="brand-cell">${esc(row.brand)}</span></td>`;
+            else if(c.f==='task')     html+=`<td>${esc(row.task)}</td>`;
+            else if(c.f==='_date')    html+=`<td>${esc(getDisplayDate(row))}</td>`;
+            else if(c.f==='time')     html+=`<td>${esc(row.time||'—')}</td>`;
+            else if(c.f==='duration') html+=`<td>${esc(row.duration||'—')}</td>`;
+            else if(c.f==='status')   html+=`<td>${statusBadge(row.status)}</td>`;
+            else if(c.f==='notes')    html+=`<td><span class="note-cell" title="${esc(row.notes)}">${esc(row.notes||'')}</span></td>`;
+            else if(c.f==='_actions') html+=`<td><div class="row-actions"><button class="btn-icon" onclick="openModal(${row.id})">✏️</button><button class="btn-icon delete" onclick="askDelete(${row.id})">🗑️</button></div></td>`;
+        });
+        html+='</tr>';
+    });
+    html+='</tbody></table>';
+    document.getElementById('table-container').innerHTML=html;
+}
+window.sortBy=function(f){if(sortCol===f)sortDir=sortDir==='asc'?'desc':'asc';else{sortCol=f;sortDir='asc';}renderTable(filteredData);};
+
+// ── Item Modal ────────────────────────────────────────────────────────────────
+window.openModal=function(id){
+    document.getElementById('modal-title').textContent=id?'Edit Item':'Add Item';
+    document.getElementById('edit-id').value=id??'';
+    if(id){const row=allData.find(d=>d.id===id);if(!row)return;
+        document.getElementById('edit-brand').value=row.brand||'';
+        document.getElementById('edit-task').value=row.task||'';
+        document.getElementById('edit-date').value=row.date||'';
+        document.getElementById('edit-time').value=row.time||'';
+        document.getElementById('edit-duration').value=row.duration||'';
+        document.getElementById('edit-status').value=row.status||'tbd';
+        document.getElementById('edit-notes').value=row.notes||'';
     } else {
-        ['edit-brand','edit-task','edit-date','edit-time','edit-duration','edit-notes'].forEach(id => document.getElementById(id).value = '');
-        document.getElementById('edit-status').value = 'tbd';
+        ['edit-brand','edit-task','edit-date','edit-time','edit-duration','edit-notes'].forEach(i=>document.getElementById(i).value='');
+        document.getElementById('edit-status').value='tbd';
     }
     document.getElementById('modal-overlay').classList.add('open');
-    setTimeout(() => document.getElementById('edit-brand').focus(), 50);
+    setTimeout(()=>document.getElementById('edit-brand').focus(),50);
 };
-window.closeModal = function() { document.getElementById('modal-overlay').classList.remove('open'); };
-window.handleOverlayClick = function(e) { if (e.target===document.getElementById('modal-overlay')) closeModal(); };
+window.closeModal=function(){document.getElementById('modal-overlay').classList.remove('open');};
+window.handleOverlayClick=function(e){if(e.target===document.getElementById('modal-overlay'))closeModal();};
 
-window.saveItem = async function() {
-    const id       = document.getElementById('edit-id').value;
-    const brand    = document.getElementById('edit-brand').value.trim();
-    const task     = document.getElementById('edit-task').value.trim();
-    const date     = document.getElementById('edit-date').value;
-    const time     = document.getElementById('edit-time').value.trim();
-    const duration = document.getElementById('edit-duration').value.trim();
-    const status   = document.getElementById('edit-status').value;
-    const notes    = document.getElementById('edit-notes').value.trim();
-    if (!brand || !task) { alert('Brand and Task are required.'); return; }
-
-    const btn = document.getElementById('btn-save');
-    btn.disabled = true; btn.textContent = 'Saving…';
-    setSyncStatus('syncing', 'Saving…');
-
-    try {
-        if (id) {
-            const { error } = await db.from('asks').update({ brand, task, date, time, duration, status, notes }).eq('id', parseInt(id));
-            if (error) throw error;
-        } else {
-            const { error } = await db.from('asks').insert({ brand, task, date, time, duration, status, notes });
-            if (error) throw error;
-        }
-        setSyncStatus('synced', 'Saved ✓');
-        document.getElementById('last-updated').textContent = new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-        closeModal();
-        await loadData();
-    } catch(e) {
-        setSyncStatus('error', 'Save failed');
-        alert('Error saving: ' + e.message);
-    } finally {
-        btn.disabled = false; btn.textContent = 'Save';
-    }
+window.saveItem=async function(){
+    const id=document.getElementById('edit-id').value;
+    const brand=document.getElementById('edit-brand').value.trim();
+    const task=document.getElementById('edit-task').value.trim();
+    const date=document.getElementById('edit-date').value;
+    const time=document.getElementById('edit-time').value.trim();
+    const duration=document.getElementById('edit-duration').value.trim();
+    const status=document.getElementById('edit-status').value;
+    const notes=document.getElementById('edit-notes').value.trim();
+    if(!brand||!task){alert('Brand and Task are required.');return;}
+    const btn=document.getElementById('btn-save');
+    btn.disabled=true;btn.textContent='Saving…';setSyncStatus('syncing','Saving…');
+    try{
+        if(id){const{error}=await db.from('asks').update({brand,task,date,time,duration,status,notes}).eq('id',parseInt(id));if(error)throw error;}
+        else{const{error}=await db.from('asks').insert({brand,task,date,time,duration,status,notes});if(error)throw error;}
+        setSyncStatus('synced','Saved ✓');stampNow();closeModal();await loadData();
+    }catch(e){setSyncStatus('error','Save failed');alert('Error: '+e.message);}
+    finally{btn.disabled=false;btn.textContent='Save';}
 };
 
-// ─── Delete ───────────────────────────────────────────────────────────────────
-window.askDelete = function(id) {
-    pendingDeleteId = id;
-    const row = allData.find(d => d.id===id);
-    document.getElementById('confirm-msg').textContent = `Delete "${row?.brand} — ${row?.task}"?`;
-    document.getElementById('confirm-bar').classList.add('open');
-};
-window.cancelDelete = function() {
-    pendingDeleteId = null;
-    document.getElementById('confirm-bar').classList.remove('open');
-};
-window.confirmDelete = async function() {
-    if (pendingDeleteId == null) return;
-    setSyncStatus('syncing', 'Deleting…');
-    try {
-        const { error } = await db.from('asks').delete().eq('id', pendingDeleteId);
-        if (error) throw error;
-        pendingDeleteId = null;
-        document.getElementById('confirm-bar').classList.remove('open');
-        setSyncStatus('synced', 'Deleted ✓');
-        await loadData();
-    } catch(e) {
-        setSyncStatus('error', 'Delete failed');
-        alert('Error: ' + e.message);
-    }
+// ── Delete ────────────────────────────────────────────────────────────────────
+window.askDelete=function(id){pendingDeleteId=id;const row=allData.find(d=>d.id===id);document.getElementById('confirm-msg').textContent=`Delete "${row?.brand} — ${row?.task}"?`;document.getElementById('confirm-bar').classList.add('open');};
+window.cancelDelete=function(){pendingDeleteId=null;document.getElementById('confirm-bar').classList.remove('open');};
+window.confirmDelete=async function(){
+    if(pendingDeleteId==null)return;
+    setSyncStatus('syncing','Deleting…');
+    try{const{error}=await db.from('asks').delete().eq('id',pendingDeleteId);if(error)throw error;pendingDeleteId=null;document.getElementById('confirm-bar').classList.remove('open');setSyncStatus('synced','Deleted ✓');await loadData();}
+    catch(e){setSyncStatus('error','Delete failed');alert('Error: '+e.message);}
 };
 
-document.addEventListener('keydown', e => {
-    if (e.key==='Escape') closeModal();
-    if ((e.metaKey||e.ctrlKey) && e.key==='Enter' && document.getElementById('modal-overlay').classList.contains('open')) saveItem();
+// ── Settings Panel ────────────────────────────────────────────────────────────
+window.openSettings=function(){
+    draftBrands=[...brandsList];
+    draftStatuses=statusesList.map(s=>({...s}));
+    renderBrandTags(); renderStatusTags();
+    document.getElementById('settings-overlay').classList.add('open');
+};
+window.closeSettings=function(){document.getElementById('settings-overlay').classList.remove('open');};
+window.handleSettingsOverlay=function(e){if(e.target===document.getElementById('settings-overlay'))closeSettings();};
+
+function renderBrandTags(){
+    document.getElementById('brands-tag-list').innerHTML=draftBrands.map((b,i)=>`
+        <div class="tag">${esc(b)}<button class="tag-remove" onclick="removeBrand(${i})" title="Remove">×</button></div>`).join('');
+}
+function renderStatusTags(){
+    document.getElementById('statuses-tag-list').innerHTML=draftStatuses.map((s,i)=>{
+        const isDefault=DEFAULT_STATUSES.includes(s.value);
+        return `<div class="tag status-${s.value}">${esc(s.label)}${!isDefault?`<button class="tag-remove" onclick="removeStatus(${i})" title="Remove">×</button>`:''}</div>`;
+    }).join('');
+}
+
+window.addBrand=function(){
+    const input=document.getElementById('new-brand-input');
+    const val=input.value.trim();
+    if(!val)return;
+    if(draftBrands.includes(val)){input.value='';return;}
+    draftBrands.push(val);draftBrands.sort();
+    renderBrandTags();input.value='';
+};
+window.removeBrand=function(i){draftBrands.splice(i,1);renderBrandTags();};
+
+window.addStatus=function(){
+    const input=document.getElementById('new-status-input');
+    const label=input.value.trim();
+    if(!label)return;
+    const value=label.toLowerCase().replace(/\s+/g,'-');
+    if(draftStatuses.find(s=>s.value===value)){input.value='';return;}
+    draftStatuses.push({value,label});
+    renderStatusTags();input.value='';
+};
+window.removeStatus=function(i){
+    if(DEFAULT_STATUSES.includes(draftStatuses[i].value))return;
+    draftStatuses.splice(i,1);renderStatusTags();
+};
+
+window.saveSettings=async function(){
+    const btn=document.getElementById('btn-save-settings');
+    btn.disabled=true;btn.textContent='Saving…';setSyncStatus('syncing','Saving config…');
+    try{
+        await db.from('config').upsert([
+            {key:'brands',value:draftBrands},
+            {key:'statuses',value:draftStatuses}
+        ]);
+        brandsList=draftBrands;statusesList=draftStatuses;
+        rebuildFilterDropdowns();applyFilters();
+        setSyncStatus('synced','Saved ✓');stampNow();closeSettings();
+    }catch(e){setSyncStatus('error','Save failed');alert('Error: '+e.message);}
+    finally{btn.disabled=false;btn.textContent='Save Changes';}
+};
+
+document.addEventListener('keydown',e=>{
+    if(e.key==='Escape'){closeModal();closeSettings();}
+    if((e.metaKey||e.ctrlKey)&&e.key==='Enter'&&document.getElementById('modal-overlay').classList.contains('open'))saveItem();
 });
 
-// ─── Init ─────────────────────────────────────────────────────────────────────
 loadData();
 </script>
 </body>
